@@ -1,0 +1,15 @@
+<package>
+  <description brief="module_controller">
+
+     module_controller
+
+  </description>
+  <author>jason</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/module_controller</url>
+  <depend package="rospy"/>
+
+</package>
+
+
