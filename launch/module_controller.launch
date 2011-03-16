@@ -1,0 +1,4 @@
+<launch>
+   <node pkg="module_controller" name="robot1" type="robot_database.py"/>
+   <node pkg="module_controller" name="gui1" type="ModuleControllerGUI.py"/>
+</launch>

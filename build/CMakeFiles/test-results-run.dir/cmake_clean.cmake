@@ -1,4 +1,7 @@
 FILE(REMOVE_RECURSE
+  "../src/module_controller/srv"
+  "../srv_gen"
+  "../srv_gen"
   "CMakeFiles/test-results-run"
 )
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import roslib; roslib.load_manifest('module_controller')
+from module_controller.srv import *
 import rospy
 import threading
 import time
-import serial
 
 import pygtk
 pygtk.require('2.0')
@@ -21,38 +21,20 @@ class ModuleControllerGUI(threading.Thread):
 		global textBoxList
 		global numModules
 		
-		# Create arrays for module data...
-		# Array that stores current module angle as a 10 bit unsigned int
-		# in the max range of motion for the module.
-		moduleIntAngles = []
-		# Array that stores the current module angle as a float in degrees.
-		moduleFloatAngles = []
-		# Array that stores the offset of where angle 0 is for each module.
-		moduleOffsets = []
-
-		# Populate the arrays with one extra value, so that our
-		# modules can be stored in the index range 1 to numModules.
-		for i in range(0,numModules+1):
-			moduleIntAngles.append(int(0))
-			moduleFloatAngles.append(float(0.0))
-			moduleOffsets.append(int(0))
-
-		# This is where we would grab the offsets.
-		# For now, we fake it.
-		for i in range(1,numModules+1):
-			moduleOffsets[i] = 511
-
-		while not self.killthread.isSet():
+		while not (self.killthread.isSet() or rospy.is_shutdown()):
 			for i in range(1,numModules+1):
-				# Grab the angle from module i.
-				# For now, we fake it.
 				# Don't print to an active servo box.  This is done
 				# to avoid overwriting user input.
 				if buttonList[i].get_active() == False:
-					moduleIntAngles[i] = 600+(30*i)
-					moduleFloatAngles[i] = ((moduleIntAngles[i] - moduleOffsets[i])/1023.0)*300.0
-					textBoxList[i].set_text(str(moduleFloatAngles[i]))
-					time.sleep(1)
+					rospy.wait_for_service('poll_servo_angle')
+					try:
+						poll_servo_angle = rospy.ServiceProxy('poll_servo_angle', PollServoAngle)
+						response = poll_servo_angle(i)
+						textBoxList[i].set_text(response.angle)
+					except rospy.ServiceException, e:
+						print "Service call failed: %s" % e
+
+					time.sleep(0.01)
 
 	def stop(self):
 		self.killthread.set()
@@ -346,14 +328,14 @@ class ModuleControllerGUI(threading.Thread):
 # This is just a placeholder until I find out how to pass this in.
 numModules = 0
 	
-# Set the precision of all floating point numbers.
-precision = 3
-	
 # This array stores the button objects as they are created.
 buttonList = []
 
 # This array stores the text entry objects as they are created.
 textBoxList = []
+
+# This sets float precision.
+precision = 2
 
 # This variable allows the "All" box to be manipulated without
 # changing every other box.
@@ -368,5 +350,5 @@ distanceUnit = "inches"
 window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 
 if __name__ == "__main__":
-	modGUI = ModuleControllerGUI(5)
+	modGUI = ModuleControllerGUI(3)
 	gtk.main()
