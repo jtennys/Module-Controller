@@ -6,9 +6,9 @@ FILE(REMOVE_RECURSE
   "../srv_gen/lisp/SetServoPower.lisp"
   "../srv_gen/lisp/_package.lisp"
   "../srv_gen/lisp/_package_SetServoPower.lisp"
-  "../srv_gen/lisp/PollServoAngle.lisp"
+  "../srv_gen/lisp/GetServoAngle.lisp"
   "../srv_gen/lisp/_package.lisp"
-  "../srv_gen/lisp/_package_PollServoAngle.lisp"
+  "../srv_gen/lisp/_package_GetServoAngle.lisp"
 )
 
 # Per-language clean rules from dependency scanning.

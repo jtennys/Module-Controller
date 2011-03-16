@@ -6,6 +6,19 @@ import serial
 import threading
 import time
 
+def serialCommEnter():
+	global serialInUse
+
+	while serialInUse:
+		doNothing = 0
+
+	serialInUse = 1
+
+def serialCommExit():
+	global serialInUse
+
+	serialInUse = 0
+
 def response_check(response):
 	# If we have a valid response, we extract the numbers.
         if len(response) >= 3:
@@ -39,7 +52,7 @@ def convert_angle(intVal, precision):
 
 	return angle
 
-def handle_poll_servo_angle(req):
+def handle_get_servo_angle(req):
 	# Pull our serial port object in from the global scope.
 	global robotComm
 
@@ -53,11 +66,17 @@ def handle_poll_servo_angle(req):
 		# Create the command.
 		command = "r," + str(req.ID) + ",a;"
 
+		# Grab the serial port.
+		serialCommEnter()
+
 		# Write the command to the robot.
 		robotComm.write(command)
 
 		# Read the command from the robot.
 		response = robotComm.readline()
+
+		# Release the serial port.
+		serialCommExit()
 
 		# Check the response string for validity and return the result.
 		response = response_check(response)
@@ -69,10 +88,10 @@ def handle_poll_servo_angle(req):
 		if tempAngle:
 			servoAngles[req.ID] = tempAngle
 
-		# Return the string representation of
-		return PollServoAngleResponse(servoAngles[req.ID])
+		# Return the floating point angle.
+		return GetServoAngleResponse(servoAngles[req.ID])
 	else:
-		return PollServoAngleResponse(servoAngles[0])
+		return GetServoAngleResponse(servoAngles[0])
 
 def handle_set_servo_power(req):
 	# Pull our serial port object in from the global scope.
@@ -85,28 +104,28 @@ def handle_set_servo_power(req):
 	global numModules
 
 	if (req.ID <= numModules) and (req.ID > 0):
-		# While the value is not what we want it to be...
-		# Create the write command.
-		# command = "r," + str(req.ID) + ",a;"
+		# Create the command.
+		command = "w," + str(req.ID) + ",p," + str(req.Power) + ";"
+
+		# Grab the serial port.
+		serialCommEnter()
 
 		# Write the torque command to the robot.
-		# robotComm.write(command)
+		robotComm.write(command)
 
-		# Create the read command.
+		# Release the serial port.
+		serialCommExit()
 
-		# Check to see what the value is.
-
-		# If it is the value we wanted, the while loop is exited...
-
-		# Set the 
+		# Set the power value for this servo.
 		servoPower[req.ID] = req.Power
 
-		# Return the string representation of
+		# Return a success.
 		return SetServoPowerResponse(1)
 	else:
+		# Return a failure.
 		return SetServoPowerResponse(0)
 
-def poll_servo_angle_server():
+def get_servo_angle_server():
 	# Pull in the global module values for initialization.
 	global servoAngles
 	global numModules
@@ -116,7 +135,7 @@ def poll_servo_angle_server():
 		servoAngles.append(0.0)
 
 	# Start the poll angle service.
-	s = rospy.Service('poll_servo_angle', PollServoAngle, handle_poll_servo_angle)
+	s = rospy.Service('get_servo_angle', GetServoAngle, handle_get_servo_angle)
 
 def set_servo_power_server():
 	# Pull in the power boolean array and module number.
@@ -138,10 +157,12 @@ def start_robot_database():
 	# Find out how many modules the robot has found.
 	numModules = 3
 
-	# Initialize the server
+	# Initialize the server.
 	rospy.init_node('robot_data_server')
 
-	poll_servo_angle_server()
+	# Start the services.
+	get_servo_angle_server()
+
 	set_servo_power_server()
 
 # Here are our global data variables...
@@ -154,6 +175,9 @@ servoPower = []
 servoSpeed = []
 # The number of modules this system has.
 numModules = 0
+
+# Use this variable to avoid serial comm errors from multiple threads.
+serialInUse = 0
 
 # This is our serial communication object.
 robotComm = serial.Serial(port = '/dev/ttyUSB0',\

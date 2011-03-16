@@ -26,10 +26,10 @@ class ModuleControllerGUI(threading.Thread):
 				# Don't print to an active servo box.  This is done
 				# to avoid overwriting user input.
 				if buttonList[i].get_active() == False:
-					rospy.wait_for_service('poll_servo_angle', 1)
+					rospy.wait_for_service('get_servo_angle', 1)
 					try:
-						poll_servo_angle = rospy.ServiceProxy('poll_servo_angle', PollServoAngle)
-						response = poll_servo_angle(i)
+						get_servo_angle = rospy.ServiceProxy('get_servo_angle', GetServoAngle)
+						response = get_servo_angle(i)
 						gtk.gdk.threads_enter()
 						textBoxList[i].set_text(str(response.angle))
 						gtk.gdk.threads_leave()
@@ -218,6 +218,7 @@ class ModuleControllerGUI(threading.Thread):
 	def destroy(self, widget, data=None):
 		self.stop()
 		gtk.main_quit()
+		
 
 	def __init__(self, *args):
 		threading.Thread.__init__(self)

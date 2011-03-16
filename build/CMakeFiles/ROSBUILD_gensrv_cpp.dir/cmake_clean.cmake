@@ -4,7 +4,7 @@ FILE(REMOVE_RECURSE
   "../srv_gen"
   "CMakeFiles/ROSBUILD_gensrv_cpp"
   "../srv_gen/cpp/include/module_controller/SetServoPower.h"
-  "../srv_gen/cpp/include/module_controller/PollServoAngle.h"
+  "../srv_gen/cpp/include/module_controller/GetServoAngle.h"
 )
 
 # Per-language clean rules from dependency scanning.

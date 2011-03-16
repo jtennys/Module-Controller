@@ -6,6 +6,6 @@
   :components ((:file "_package")
     (:file "SetServoPower" :depends-on ("_package_SetServoPower"))
     (:file "_package_SetServoPower" :depends-on ("_package"))
-    (:file "PollServoAngle" :depends-on ("_package_PollServoAngle"))
-    (:file "_package_PollServoAngle" :depends-on ("_package"))
+    (:file "GetServoAngle" :depends-on ("_package_GetServoAngle"))
+    (:file "_package_GetServoAngle" :depends-on ("_package"))
   ))

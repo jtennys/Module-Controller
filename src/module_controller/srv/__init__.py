@@ -1,2 +1,2 @@
 from _SetServoPower import *
-from _PollServoAngle import *
+from _GetServoAngle import *
