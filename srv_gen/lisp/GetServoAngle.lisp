@@ -47,10 +47,10 @@
   "module_controller/GetServoAngleRequest")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<GetServoAngle-request>)))
   "Returns md5sum for a message object of type '<GetServoAngle-request>"
-  "58742bd1a1a5aa07bee05a873ed0f9aa")
+  "3b3d703516b54eab670621d84fbecd83")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'GetServoAngle-request)))
   "Returns md5sum for a message object of type 'GetServoAngle-request"
-  "58742bd1a1a5aa07bee05a873ed0f9aa")
+  "3b3d703516b54eab670621d84fbecd83")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<GetServoAngle-request>)))
   "Returns full string definition for message of type '<GetServoAngle-request>"
   (cl:format cl:nil "int8 ID~%~%~%"))
@@ -69,9 +69,9 @@
 ;//! \htmlinclude GetServoAngle-response.msg.html
 
 (cl:defclass <GetServoAngle-response> (roslisp-msg-protocol:ros-message)
-  ((angle
-    :reader angle
-    :initarg :angle
+  ((Angle
+    :reader Angle
+    :initarg :Angle
     :type cl:float
     :initform 0.0))
 )
@@ -84,13 +84,13 @@
   (cl:unless (cl:typep m 'GetServoAngle-response)
     (roslisp-msg-protocol:msg-deprecation-warning "using old message class name module_controller-srv:<GetServoAngle-response> is deprecated: use module_controller-srv:GetServoAngle-response instead.")))
 
-(cl:ensure-generic-function 'angle-val :lambda-list '(m))
-(cl:defmethod angle-val ((m <GetServoAngle-response>))
-  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader module_controller-srv:angle-val is deprecated.  Use module_controller-srv:angle instead.")
-  (angle m))
+(cl:ensure-generic-function 'Angle-val :lambda-list '(m))
+(cl:defmethod Angle-val ((m <GetServoAngle-response>))
+  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader module_controller-srv:Angle-val is deprecated.  Use module_controller-srv:Angle instead.")
+  (Angle m))
 (cl:defmethod roslisp-msg-protocol:serialize ((msg <GetServoAngle-response>) ostream)
   "Serializes a message object of type '<GetServoAngle-response>"
-  (cl:let ((bits (roslisp-utils:encode-single-float-bits (cl:slot-value msg 'angle))))
+  (cl:let ((bits (roslisp-utils:encode-single-float-bits (cl:slot-value msg 'Angle))))
     (cl:write-byte (cl:ldb (cl:byte 8 0) bits) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 8) bits) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 16) bits) ostream)
@@ -103,7 +103,7 @@
       (cl:setf (cl:ldb (cl:byte 8 8) bits) (cl:read-byte istream))
       (cl:setf (cl:ldb (cl:byte 8 16) bits) (cl:read-byte istream))
       (cl:setf (cl:ldb (cl:byte 8 24) bits) (cl:read-byte istream))
-    (cl:setf (cl:slot-value msg 'angle) (roslisp-utils:decode-single-float-bits bits)))
+    (cl:setf (cl:slot-value msg 'Angle) (roslisp-utils:decode-single-float-bits bits)))
   msg
 )
 (cl:defmethod roslisp-msg-protocol:ros-datatype ((msg (cl:eql '<GetServoAngle-response>)))
@@ -114,16 +114,16 @@
   "module_controller/GetServoAngleResponse")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<GetServoAngle-response>)))
   "Returns md5sum for a message object of type '<GetServoAngle-response>"
-  "58742bd1a1a5aa07bee05a873ed0f9aa")
+  "3b3d703516b54eab670621d84fbecd83")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'GetServoAngle-response)))
   "Returns md5sum for a message object of type 'GetServoAngle-response"
-  "58742bd1a1a5aa07bee05a873ed0f9aa")
+  "3b3d703516b54eab670621d84fbecd83")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<GetServoAngle-response>)))
   "Returns full string definition for message of type '<GetServoAngle-response>"
-  (cl:format cl:nil "float32 angle~%~%~%~%"))
+  (cl:format cl:nil "float32 Angle~%~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql 'GetServoAngle-response)))
   "Returns full string definition for message of type 'GetServoAngle-response"
-  (cl:format cl:nil "float32 angle~%~%~%~%"))
+  (cl:format cl:nil "float32 Angle~%~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:serialization-length ((msg <GetServoAngle-response>))
   (cl:+ 0
      4
@@ -131,7 +131,7 @@
 (cl:defmethod roslisp-msg-protocol:ros-message-to-list ((msg <GetServoAngle-response>))
   "Converts a ROS message object to a list"
   (cl:list 'GetServoAngle-response
-    (cl:cons ':angle (angle msg))
+    (cl:cons ':Angle (Angle msg))
 ))
 (cl:defmethod roslisp-msg-protocol:service-request-type ((msg (cl:eql 'GetServoAngle)))
   'GetServoAngle-request)

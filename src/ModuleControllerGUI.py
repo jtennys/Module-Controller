@@ -20,6 +20,7 @@ class ModuleControllerGUI(threading.Thread):
 		global buttonList
 		global textBoxList
 		global numModules
+		global angleUnit
 		
 		while not (self.killthread.isSet() or rospy.is_shutdown()):
 			for i in range(1,numModules+1):
@@ -30,8 +31,14 @@ class ModuleControllerGUI(threading.Thread):
 					try:
 						get_servo_angle = rospy.ServiceProxy('get_servo_angle', GetServoAngle)
 						response = get_servo_angle(i)
+						angle = 0.0
+						if cmp(angleUnit,"radians") == 0:
+							angle = response.Angle*(3.14159/180.0)
+						else:
+							angle = response.Angle
+
 						gtk.gdk.threads_enter()
-						textBoxList[i].set_text(str(response.angle))
+						textBoxList[i].set_text(str(angle))
 						gtk.gdk.threads_leave()
 					except rospy.ServiceException, e:
 						print "Service call failed: %s" % e
@@ -111,6 +118,7 @@ class ModuleControllerGUI(threading.Thread):
 	def enter_callback(self, widget, entry):
 		# Pull in the button list array.
 		global textBoxList
+		global angleUnit
 
 		# This is where entered angles are sent.  A condition is added
 		# to force users to click the send coordinates button.
@@ -123,35 +131,40 @@ class ModuleControllerGUI(threading.Thread):
 					set_servo_angle = rospy.ServiceProxy('set_servo_angle', SetServoAngle)
 					for i in range(1,numModules+1):
 						if cmp(widget.get_name(),textBoxList[i].get_name()) == 0:
-							response = set_servo_angle(i, float(entry.get_text()))
+							angle = 0.0
+
+							if cmp(angleUnit,"radians") == 0:
+								angle = (float(entry.get_text()))*(180/3.14159)
+							else:
+								angle = float(entry.get_text())
+
+							response = set_servo_angle(i, angle)
 				except rospy.ServiceException, e:
 					print "Service call failed: %s" % e
 		
 	def angle_change(self, widget):
-		global numModules
-		global textBoxList
 		global angleUnit
-		global precision
-
+			
 		tempString = widget.get_active_text()
-		
+
 		for i in range(1,numModules+1):
-			angle = float(textBoxList[i].get_text())
-			
-			if cmp(tempString,"radians") == 0:
-				# We only use two units, but for completeness, we
-				# check what the previous unit was before conversion.
-				if cmp(angleUnit,"degrees") == 0:
-					angle = angle*(3.14159/180)
-			elif cmp(tempString,"degrees") == 0:
-				# We only use two units, but for completeness, we
-				# check what the previous unit was before conversion.
-				if cmp(angleUnit,"radians") == 0:
-					angle = angle*(180/3.14159)
-			
-			angle = float(int(angle*(10**precision)))/(10**precision)
-			textBoxList[i].set_text(str(angle))
-			
+			# Force an uneditable (activated) box to change units.
+			if textBoxList[i].get_editable():
+				angle = float(textBoxList[i].get_text())
+
+				if cmp(tempString,"radians") == 0:
+					# We only use two units, but for completeness, we
+					# check what the previous unit was before conversion.
+					if cmp(angleUnit,"degrees") == 0:
+						angle = angle*(3.14159/180)
+				elif cmp(tempString,"degrees") == 0:
+					# We only use two units, but for completeness, we
+					# check what the previous unit was before conversion.
+					if cmp(angleUnit,"radians") == 0:
+						angle = angle*(180/3.14159)
+
+				textBoxList[i].set_text(str(angle))
+
 		angleUnit = tempString
 			
 	def distance_change(self, widget):

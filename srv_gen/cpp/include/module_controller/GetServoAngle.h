@@ -51,7 +51,7 @@ public:
   ROS_DEPRECATED const std::string __getMD5Sum() const { return __s_getMD5Sum_(); }
 
 private:
-  static const char* __s_getServerMD5Sum_() { return "58742bd1a1a5aa07bee05a873ed0f9aa"; }
+  static const char* __s_getServerMD5Sum_() { return "3b3d703516b54eab670621d84fbecd83"; }
 public:
   ROS_DEPRECATED static const std::string __s_getServerMD5Sum() { return __s_getServerMD5Sum_(); }
 
@@ -102,17 +102,17 @@ struct GetServoAngleResponse_ : public ros::Message
   typedef GetServoAngleResponse_<ContainerAllocator> Type;
 
   GetServoAngleResponse_()
-  : angle(0.0)
+  : Angle(0.0)
   {
   }
 
   GetServoAngleResponse_(const ContainerAllocator& _alloc)
-  : angle(0.0)
+  : Angle(0.0)
   {
   }
 
-  typedef float _angle_type;
-  float angle;
+  typedef float _Angle_type;
+  float Angle;
 
 
 private:
@@ -123,21 +123,21 @@ public:
   ROS_DEPRECATED const std::string __getDataType() const { return __s_getDataType_(); }
 
 private:
-  static const char* __s_getMD5Sum_() { return "2d11dcdbe5a6f73dd324353dc52315ab"; }
+  static const char* __s_getMD5Sum_() { return "3c12d5a3eed4d7589fde4b3bcd93aff0"; }
 public:
   ROS_DEPRECATED static const std::string __s_getMD5Sum() { return __s_getMD5Sum_(); }
 
   ROS_DEPRECATED const std::string __getMD5Sum() const { return __s_getMD5Sum_(); }
 
 private:
-  static const char* __s_getServerMD5Sum_() { return "58742bd1a1a5aa07bee05a873ed0f9aa"; }
+  static const char* __s_getServerMD5Sum_() { return "3b3d703516b54eab670621d84fbecd83"; }
 public:
   ROS_DEPRECATED static const std::string __s_getServerMD5Sum() { return __s_getServerMD5Sum_(); }
 
   ROS_DEPRECATED const std::string __getServerMD5Sum() const { return __s_getServerMD5Sum_(); }
 
 private:
-  static const char* __s_getMessageDefinition_() { return "float32 angle\n\
+  static const char* __s_getMessageDefinition_() { return "float32 Angle\n\
 \n\
 \n\
 "; }
@@ -149,21 +149,21 @@ public:
   ROS_DEPRECATED virtual uint8_t *serialize(uint8_t *write_ptr, uint32_t seq) const
   {
     ros::serialization::OStream stream(write_ptr, 1000000000);
-    ros::serialization::serialize(stream, angle);
+    ros::serialization::serialize(stream, Angle);
     return stream.getData();
   }
 
   ROS_DEPRECATED virtual uint8_t *deserialize(uint8_t *read_ptr)
   {
     ros::serialization::IStream stream(read_ptr, 1000000000);
-    ros::serialization::deserialize(stream, angle);
+    ros::serialization::deserialize(stream, Angle);
     return stream.getData();
   }
 
   ROS_DEPRECATED virtual uint32_t serializationLength() const
   {
     uint32_t size = 0;
-    size += ros::serialization::serializationLength(angle);
+    size += ros::serialization::serializationLength(Angle);
     return size;
   }
 
@@ -239,12 +239,12 @@ template<class ContainerAllocator>
 struct MD5Sum< ::module_controller::GetServoAngleResponse_<ContainerAllocator> > {
   static const char* value() 
   {
-    return "2d11dcdbe5a6f73dd324353dc52315ab";
+    return "3c12d5a3eed4d7589fde4b3bcd93aff0";
   }
 
   static const char* value(const  ::module_controller::GetServoAngleResponse_<ContainerAllocator> &) { return value(); } 
-  static const uint64_t static_value1 = 0x2d11dcdbe5a6f73dULL;
-  static const uint64_t static_value2 = 0xd324353dc52315abULL;
+  static const uint64_t static_value1 = 0x3c12d5a3eed4d758ULL;
+  static const uint64_t static_value2 = 0x9fde4b3bcd93aff0ULL;
 };
 
 template<class ContainerAllocator>
@@ -261,7 +261,7 @@ template<class ContainerAllocator>
 struct Definition< ::module_controller::GetServoAngleResponse_<ContainerAllocator> > {
   static const char* value() 
   {
-    return "float32 angle\n\
+    return "float32 Angle\n\
 \n\
 \n\
 ";
@@ -301,7 +301,7 @@ template<class ContainerAllocator> struct Serializer< ::module_controller::GetSe
 {
   template<typename Stream, typename T> inline static void allInOne(Stream& stream, T m)
   {
-    stream.next(m.angle);
+    stream.next(m.Angle);
   }
 
   ROS_DECLARE_ALLINONE_SERIALIZER;
@@ -317,7 +317,7 @@ template<>
 struct MD5Sum<module_controller::GetServoAngle> {
   static const char* value() 
   {
-    return "58742bd1a1a5aa07bee05a873ed0f9aa";
+    return "3b3d703516b54eab670621d84fbecd83";
   }
 
   static const char* value(const module_controller::GetServoAngle&) { return value(); } 
@@ -337,7 +337,7 @@ template<class ContainerAllocator>
 struct MD5Sum<module_controller::GetServoAngleRequest_<ContainerAllocator> > {
   static const char* value() 
   {
-    return "58742bd1a1a5aa07bee05a873ed0f9aa";
+    return "3b3d703516b54eab670621d84fbecd83";
   }
 
   static const char* value(const module_controller::GetServoAngleRequest_<ContainerAllocator> &) { return value(); } 
@@ -357,7 +357,7 @@ template<class ContainerAllocator>
 struct MD5Sum<module_controller::GetServoAngleResponse_<ContainerAllocator> > {
   static const char* value() 
   {
-    return "58742bd1a1a5aa07bee05a873ed0f9aa";
+    return "3b3d703516b54eab670621d84fbecd83";
   }
 
   static const char* value(const module_controller::GetServoAngleResponse_<ContainerAllocator> &) { return value(); } 

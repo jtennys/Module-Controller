@@ -106,14 +106,14 @@ import struct
 
 
 class GetServoAngleResponse(roslib.message.Message):
-  _md5sum = "2d11dcdbe5a6f73dd324353dc52315ab"
+  _md5sum = "3c12d5a3eed4d7589fde4b3bcd93aff0"
   _type = "module_controller/GetServoAngleResponse"
   _has_header = False #flag to mark the presence of a Header object
-  _full_text = """float32 angle
+  _full_text = """float32 Angle
 
 
 """
-  __slots__ = ['angle']
+  __slots__ = ['Angle']
   _slot_types = ['float32']
 
   def __init__(self, *args, **kwds):
@@ -124,7 +124,7 @@ class GetServoAngleResponse(roslib.message.Message):
     changes.  You cannot mix in-order arguments and keyword arguments.
     
     The available fields are:
-       angle
+       Angle
     
     @param args: complete set of field values, in .msg order
     @param kwds: use keyword arguments corresponding to message field names
@@ -133,10 +133,10 @@ class GetServoAngleResponse(roslib.message.Message):
     if args or kwds:
       super(GetServoAngleResponse, self).__init__(*args, **kwds)
       #message fields cannot be None, assign default values for those that are
-      if self.angle is None:
-        self.angle = 0.
+      if self.Angle is None:
+        self.Angle = 0.
     else:
-      self.angle = 0.
+      self.Angle = 0.
 
   def _get_types(self):
     """
@@ -151,7 +151,7 @@ class GetServoAngleResponse(roslib.message.Message):
     @type  buff: StringIO
     """
     try:
-      buff.write(_struct_f.pack(self.angle))
+      buff.write(_struct_f.pack(self.Angle))
     except struct.error, se: self._check_types(se)
     except TypeError, te: self._check_types(te)
 
@@ -165,7 +165,7 @@ class GetServoAngleResponse(roslib.message.Message):
       end = 0
       start = end
       end += 4
-      (self.angle,) = _struct_f.unpack(str[start:end])
+      (self.Angle,) = _struct_f.unpack(str[start:end])
       return self
     except struct.error, e:
       raise roslib.message.DeserializationError(e) #most likely buffer underfill
@@ -180,7 +180,7 @@ class GetServoAngleResponse(roslib.message.Message):
     @type  numpy module
     """
     try:
-      buff.write(_struct_f.pack(self.angle))
+      buff.write(_struct_f.pack(self.Angle))
     except struct.error, se: self._check_types(se)
     except TypeError, te: self._check_types(te)
 
@@ -196,7 +196,7 @@ class GetServoAngleResponse(roslib.message.Message):
       end = 0
       start = end
       end += 4
-      (self.angle,) = _struct_f.unpack(str[start:end])
+      (self.Angle,) = _struct_f.unpack(str[start:end])
       return self
     except struct.error, e:
       raise roslib.message.DeserializationError(e) #most likely buffer underfill
@@ -205,6 +205,6 @@ _struct_I = roslib.message.struct_I
 _struct_f = struct.Struct("<f")
 class GetServoAngle(roslib.message.ServiceDefinition):
   _type          = 'module_controller/GetServoAngle'
-  _md5sum = '58742bd1a1a5aa07bee05a873ed0f9aa'
+  _md5sum = '3b3d703516b54eab670621d84fbecd83'
   _request_class  = GetServoAngleRequest
   _response_class = GetServoAngleResponse
