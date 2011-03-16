@@ -42,6 +42,9 @@ CMAKE_BINARY_DIR = /home/jason/ros_packages/module_controller/build
 CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/SetServoPower.lisp
 CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package.lisp
 CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_SetServoPower.lisp
+CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/SetServoAngle.lisp
+CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package.lisp
+CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_SetServoAngle.lisp
 CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/GetServoAngle.lisp
 CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package.lisp
 CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_GetServoAngle.lisp
@@ -67,6 +70,27 @@ CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_GetServoAngle.lisp
 
 ../srv_gen/lisp/_package_SetServoPower.lisp: ../srv_gen/lisp/SetServoPower.lisp
 
+../srv_gen/lisp/SetServoAngle.lisp: ../srv/SetServoAngle.srv
+../srv_gen/lisp/SetServoAngle.lisp: /opt/ros/unstable/stacks/ros_comm/clients/roslisp/scripts/genmsg_lisp.py
+../srv_gen/lisp/SetServoAngle.lisp: /opt/ros/unstable/ros/core/roslib/scripts/gendeps
+../srv_gen/lisp/SetServoAngle.lisp: ../manifest.xml
+../srv_gen/lisp/SetServoAngle.lisp: /opt/ros/unstable/ros/tools/rospack/manifest.xml
+../srv_gen/lisp/SetServoAngle.lisp: /opt/ros/unstable/ros/core/roslib/manifest.xml
+../srv_gen/lisp/SetServoAngle.lisp: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/manifest.xml
+../srv_gen/lisp/SetServoAngle.lisp: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/manifest.xml
+../srv_gen/lisp/SetServoAngle.lisp: /opt/ros/unstable/ros/core/rosbuild/manifest.xml
+../srv_gen/lisp/SetServoAngle.lisp: /opt/ros/unstable/ros/core/roslang/manifest.xml
+../srv_gen/lisp/SetServoAngle.lisp: /opt/ros/unstable/stacks/ros_comm/clients/rospy/manifest.xml
+../srv_gen/lisp/SetServoAngle.lisp: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/msg_gen/generated
+../srv_gen/lisp/SetServoAngle.lisp: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/msg_gen/generated
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_2)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv_gen/lisp/SetServoAngle.lisp, ../srv_gen/lisp/_package.lisp, ../srv_gen/lisp/_package_SetServoAngle.lisp"
+	/opt/ros/unstable/stacks/ros_comm/clients/roslisp/scripts/genmsg_lisp.py /home/jason/ros_packages/module_controller/srv/SetServoAngle.srv
+
+../srv_gen/lisp/_package.lisp: ../srv_gen/lisp/SetServoAngle.lisp
+
+../srv_gen/lisp/_package_SetServoAngle.lisp: ../srv_gen/lisp/SetServoAngle.lisp
+
 ../srv_gen/lisp/GetServoAngle.lisp: ../srv/GetServoAngle.srv
 ../srv_gen/lisp/GetServoAngle.lisp: /opt/ros/unstable/stacks/ros_comm/clients/roslisp/scripts/genmsg_lisp.py
 ../srv_gen/lisp/GetServoAngle.lisp: /opt/ros/unstable/ros/core/roslib/scripts/gendeps
@@ -80,7 +104,7 @@ CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_GetServoAngle.lisp
 ../srv_gen/lisp/GetServoAngle.lisp: /opt/ros/unstable/stacks/ros_comm/clients/rospy/manifest.xml
 ../srv_gen/lisp/GetServoAngle.lisp: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/msg_gen/generated
 ../srv_gen/lisp/GetServoAngle.lisp: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/msg_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_2)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_3)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv_gen/lisp/GetServoAngle.lisp, ../srv_gen/lisp/_package.lisp, ../srv_gen/lisp/_package_GetServoAngle.lisp"
 	/opt/ros/unstable/stacks/ros_comm/clients/roslisp/scripts/genmsg_lisp.py /home/jason/ros_packages/module_controller/srv/GetServoAngle.srv
 
@@ -92,6 +116,9 @@ ROSBUILD_gensrv_lisp: CMakeFiles/ROSBUILD_gensrv_lisp
 ROSBUILD_gensrv_lisp: ../srv_gen/lisp/SetServoPower.lisp
 ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package.lisp
 ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_SetServoPower.lisp
+ROSBUILD_gensrv_lisp: ../srv_gen/lisp/SetServoAngle.lisp
+ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package.lisp
+ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_SetServoAngle.lisp
 ROSBUILD_gensrv_lisp: ../srv_gen/lisp/GetServoAngle.lisp
 ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package.lisp
 ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_GetServoAngle.lisp

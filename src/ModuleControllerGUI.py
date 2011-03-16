@@ -109,16 +109,23 @@ class ModuleControllerGUI(threading.Thread):
 
 	# Function that is called when an enter key is pressed in a text box.
 	def enter_callback(self, widget, entry):
-		entry_text = entry.get_text()
-		
+		# Pull in the button list array.
+		global textBoxList
+
 		# This is where entered angles are sent.  A condition is added
 		# to force users to click the send coordinates button.
-		print widget.get_name()
 		if entry.get_editable():
 			if (cmp(widget.get_name(),"X") != 0) and \
 			   (cmp(widget.get_name(),"Y") != 0) and \
 			   (cmp(widget.get_name(),"Z") != 0):
-				print "Entry contents: %s\n" % entry_text
+				rospy.wait_for_service('set_servo_angle', 1)
+				try:
+					set_servo_angle = rospy.ServiceProxy('set_servo_angle', SetServoAngle)
+					for i in range(1,numModules+1):
+						if cmp(widget.get_name(),textBoxList[i].get_name()) == 0:
+							response = set_servo_angle(i, float(entry.get_text()))
+				except rospy.ServiceException, e:
+					print "Service call failed: %s" % e
 		
 	def angle_change(self, widget):
 		global numModules

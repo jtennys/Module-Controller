@@ -40,7 +40,7 @@ def response_check(response):
 
 	return response
 
-def convert_angle(intVal, precision):
+def convert_to_angle(intVal, precision):
 	# Obtain our precision factor.
 	precisionFactor = 10**precision
 
@@ -51,6 +51,10 @@ def convert_angle(intVal, precision):
 	angle = float(int(angle*precisionFactor))/precisionFactor
 
 	return angle
+
+def convert_from_angle(floatVal):
+	# Return the integer value.
+	return int((floatVal/300.0)*1023)
 
 def handle_get_servo_angle(req):
 	# Pull our serial port object in from the global scope.
@@ -82,7 +86,7 @@ def handle_get_servo_angle(req):
 		response = response_check(response)
 
 		# Convert the result of the response format check to float.
-		tempAngle = convert_angle(int(response,10),2)
+		tempAngle = convert_to_angle(int(response,10),2)
 
 		# If we have a nonzero value, store it. Otherwise, return the previous good value.
 		if tempAngle:
@@ -92,6 +96,39 @@ def handle_get_servo_angle(req):
 		return GetServoAngleResponse(servoAngles[req.ID])
 	else:
 		return GetServoAngleResponse(servoAngles[0])
+
+def handle_set_servo_angle(req):
+	# Pull our serial port object in from the global scope.
+	global robotComm
+
+	# Pull in our angles array so we can store the angle for error checking.
+	global servoAngles
+
+	# Pull in our total number of modules so that we don't allow an invalid index.
+	global numModules
+
+	if (req.ID <= numModules) and (req.ID > 0):
+		# Create the command.
+		command = "w," + str(req.ID) + ",a," + str(convert_from_angle(req.Angle)) + ";"
+
+		print command
+
+		# Grab the serial port.
+		serialCommEnter()
+
+		# Write the command to the robot.
+		robotComm.write(command)
+
+		# Release the serial port.
+		serialCommExit()
+
+		# Store the angle.
+		servoAngles[req.ID] = req.Angle
+
+		# Return the floating point angle.
+		return SetServoAngleResponse(1)
+	else:
+		return SetServoAngleResponse(0)
 
 def handle_set_servo_power(req):
 	# Pull our serial port object in from the global scope.
@@ -137,6 +174,10 @@ def get_servo_angle_server():
 	# Start the poll angle service.
 	s = rospy.Service('get_servo_angle', GetServoAngle, handle_get_servo_angle)
 
+def set_servo_angle_server():
+	# Start the set angle service.
+	s = rospy.Service('set_servo_angle', SetServoAngle, handle_set_servo_angle)
+
 def set_servo_power_server():
 	# Pull in the power boolean array and module number.
 	global servoPower
@@ -162,7 +203,7 @@ def start_robot_database():
 
 	# Start the services.
 	get_servo_angle_server()
-
+	set_servo_angle_server()
 	set_servo_power_server()
 
 # Here are our global data variables...

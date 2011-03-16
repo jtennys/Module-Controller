@@ -7,6 +7,7 @@ SET(CMAKE_DEPENDS_LANGUAGES
 SET(CMAKE_MULTIPLE_OUTPUT_PAIRS
   "/home/jason/ros_packages/module_controller/srv_gen/lisp/_package.lisp" "/home/jason/ros_packages/module_controller/srv_gen/lisp/SetServoPower.lisp"
   "/home/jason/ros_packages/module_controller/srv_gen/lisp/_package_GetServoAngle.lisp" "/home/jason/ros_packages/module_controller/srv_gen/lisp/GetServoAngle.lisp"
+  "/home/jason/ros_packages/module_controller/srv_gen/lisp/_package_SetServoAngle.lisp" "/home/jason/ros_packages/module_controller/srv_gen/lisp/SetServoAngle.lisp"
   "/home/jason/ros_packages/module_controller/srv_gen/lisp/_package_SetServoPower.lisp" "/home/jason/ros_packages/module_controller/srv_gen/lisp/SetServoPower.lisp"
   )
 
