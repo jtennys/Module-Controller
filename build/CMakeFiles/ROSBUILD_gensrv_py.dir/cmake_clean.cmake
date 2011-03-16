@@ -4,6 +4,7 @@ FILE(REMOVE_RECURSE
   "../srv_gen"
   "CMakeFiles/ROSBUILD_gensrv_py"
   "../src/module_controller/srv/__init__.py"
+  "../src/module_controller/srv/_SetServoPower.py"
   "../src/module_controller/srv/_PollServoAngle.py"
 )
 

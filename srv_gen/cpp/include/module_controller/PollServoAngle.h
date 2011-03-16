@@ -51,7 +51,7 @@ public:
   ROS_DEPRECATED const std::string __getMD5Sum() const { return __s_getMD5Sum_(); }
 
 private:
-  static const char* __s_getServerMD5Sum_() { return "215e9ffca1fdfc9cc62c2d805974a36e"; }
+  static const char* __s_getServerMD5Sum_() { return "58742bd1a1a5aa07bee05a873ed0f9aa"; }
 public:
   ROS_DEPRECATED static const std::string __s_getServerMD5Sum() { return __s_getServerMD5Sum_(); }
 
@@ -102,17 +102,17 @@ struct PollServoAngleResponse_ : public ros::Message
   typedef PollServoAngleResponse_<ContainerAllocator> Type;
 
   PollServoAngleResponse_()
-  : angle()
+  : angle(0.0)
   {
   }
 
   PollServoAngleResponse_(const ContainerAllocator& _alloc)
-  : angle(_alloc)
+  : angle(0.0)
   {
   }
 
-  typedef std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other >  _angle_type;
-  std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other >  angle;
+  typedef float _angle_type;
+  float angle;
 
 
 private:
@@ -123,21 +123,21 @@ public:
   ROS_DEPRECATED const std::string __getDataType() const { return __s_getDataType_(); }
 
 private:
-  static const char* __s_getMD5Sum_() { return "97b93cf68c1f33c435d2a2105541470e"; }
+  static const char* __s_getMD5Sum_() { return "2d11dcdbe5a6f73dd324353dc52315ab"; }
 public:
   ROS_DEPRECATED static const std::string __s_getMD5Sum() { return __s_getMD5Sum_(); }
 
   ROS_DEPRECATED const std::string __getMD5Sum() const { return __s_getMD5Sum_(); }
 
 private:
-  static const char* __s_getServerMD5Sum_() { return "215e9ffca1fdfc9cc62c2d805974a36e"; }
+  static const char* __s_getServerMD5Sum_() { return "58742bd1a1a5aa07bee05a873ed0f9aa"; }
 public:
   ROS_DEPRECATED static const std::string __s_getServerMD5Sum() { return __s_getServerMD5Sum_(); }
 
   ROS_DEPRECATED const std::string __getServerMD5Sum() const { return __s_getServerMD5Sum_(); }
 
 private:
-  static const char* __s_getMessageDefinition_() { return "string angle\n\
+  static const char* __s_getMessageDefinition_() { return "float32 angle\n\
 \n\
 \n\
 "; }
@@ -239,12 +239,12 @@ template<class ContainerAllocator>
 struct MD5Sum< ::module_controller::PollServoAngleResponse_<ContainerAllocator> > {
   static const char* value() 
   {
-    return "97b93cf68c1f33c435d2a2105541470e";
+    return "2d11dcdbe5a6f73dd324353dc52315ab";
   }
 
   static const char* value(const  ::module_controller::PollServoAngleResponse_<ContainerAllocator> &) { return value(); } 
-  static const uint64_t static_value1 = 0x97b93cf68c1f33c4ULL;
-  static const uint64_t static_value2 = 0x35d2a2105541470eULL;
+  static const uint64_t static_value1 = 0x2d11dcdbe5a6f73dULL;
+  static const uint64_t static_value2 = 0xd324353dc52315abULL;
 };
 
 template<class ContainerAllocator>
@@ -261,7 +261,7 @@ template<class ContainerAllocator>
 struct Definition< ::module_controller::PollServoAngleResponse_<ContainerAllocator> > {
   static const char* value() 
   {
-    return "string angle\n\
+    return "float32 angle\n\
 \n\
 \n\
 ";
@@ -270,6 +270,7 @@ struct Definition< ::module_controller::PollServoAngleResponse_<ContainerAllocat
   static const char* value(const  ::module_controller::PollServoAngleResponse_<ContainerAllocator> &) { return value(); } 
 };
 
+template<class ContainerAllocator> struct IsFixedSize< ::module_controller::PollServoAngleResponse_<ContainerAllocator> > : public TrueType {};
 } // namespace message_traits
 } // namespace ros
 
@@ -316,7 +317,7 @@ template<>
 struct MD5Sum<module_controller::PollServoAngle> {
   static const char* value() 
   {
-    return "215e9ffca1fdfc9cc62c2d805974a36e";
+    return "58742bd1a1a5aa07bee05a873ed0f9aa";
   }
 
   static const char* value(const module_controller::PollServoAngle&) { return value(); } 
@@ -336,7 +337,7 @@ template<class ContainerAllocator>
 struct MD5Sum<module_controller::PollServoAngleRequest_<ContainerAllocator> > {
   static const char* value() 
   {
-    return "215e9ffca1fdfc9cc62c2d805974a36e";
+    return "58742bd1a1a5aa07bee05a873ed0f9aa";
   }
 
   static const char* value(const module_controller::PollServoAngleRequest_<ContainerAllocator> &) { return value(); } 
@@ -356,7 +357,7 @@ template<class ContainerAllocator>
 struct MD5Sum<module_controller::PollServoAngleResponse_<ContainerAllocator> > {
   static const char* value() 
   {
-    return "215e9ffca1fdfc9cc62c2d805974a36e";
+    return "58742bd1a1a5aa07bee05a873ed0f9aa";
   }
 
   static const char* value(const module_controller::PollServoAngleResponse_<ContainerAllocator> &) { return value(); } 

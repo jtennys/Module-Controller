@@ -3,6 +3,7 @@ FILE(REMOVE_RECURSE
   "../srv_gen"
   "../srv_gen"
   "CMakeFiles/ROSBUILD_gensrv_cpp"
+  "../srv_gen/cpp/include/module_controller/SetServoPower.h"
   "../srv_gen/cpp/include/module_controller/PollServoAngle.h"
 )
 

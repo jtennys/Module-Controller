@@ -47,10 +47,10 @@
   "module_controller/PollServoAngleRequest")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<PollServoAngle-request>)))
   "Returns md5sum for a message object of type '<PollServoAngle-request>"
-  "215e9ffca1fdfc9cc62c2d805974a36e")
+  "58742bd1a1a5aa07bee05a873ed0f9aa")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'PollServoAngle-request)))
   "Returns md5sum for a message object of type 'PollServoAngle-request"
-  "215e9ffca1fdfc9cc62c2d805974a36e")
+  "58742bd1a1a5aa07bee05a873ed0f9aa")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<PollServoAngle-request>)))
   "Returns full string definition for message of type '<PollServoAngle-request>"
   (cl:format cl:nil "int8 ID~%~%~%"))
@@ -72,8 +72,8 @@
   ((angle
     :reader angle
     :initarg :angle
-    :type cl:string
-    :initform ""))
+    :type cl:float
+    :initform 0.0))
 )
 
 (cl:defclass PollServoAngle-response (<PollServoAngle-response>)
@@ -90,23 +90,20 @@
   (angle m))
 (cl:defmethod roslisp-msg-protocol:serialize ((msg <PollServoAngle-response>) ostream)
   "Serializes a message object of type '<PollServoAngle-response>"
-  (cl:let ((__ros_str_len (cl:length (cl:slot-value msg 'angle))))
-    (cl:write-byte (cl:ldb (cl:byte 8 0) __ros_str_len) ostream)
-    (cl:write-byte (cl:ldb (cl:byte 8 8) __ros_str_len) ostream)
-    (cl:write-byte (cl:ldb (cl:byte 8 16) __ros_str_len) ostream)
-    (cl:write-byte (cl:ldb (cl:byte 8 24) __ros_str_len) ostream))
-  (cl:map cl:nil #'(cl:lambda (c) (cl:write-byte (cl:char-code c) ostream)) (cl:slot-value msg 'angle))
+  (cl:let ((bits (roslisp-utils:encode-single-float-bits (cl:slot-value msg 'angle))))
+    (cl:write-byte (cl:ldb (cl:byte 8 0) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 8) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 16) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 24) bits) ostream))
 )
 (cl:defmethod roslisp-msg-protocol:deserialize ((msg <PollServoAngle-response>) istream)
   "Deserializes a message object of type '<PollServoAngle-response>"
-    (cl:let ((__ros_str_len 0))
-      (cl:setf (cl:ldb (cl:byte 8 0) __ros_str_len) (cl:read-byte istream))
-      (cl:setf (cl:ldb (cl:byte 8 8) __ros_str_len) (cl:read-byte istream))
-      (cl:setf (cl:ldb (cl:byte 8 16) __ros_str_len) (cl:read-byte istream))
-      (cl:setf (cl:ldb (cl:byte 8 24) __ros_str_len) (cl:read-byte istream))
-      (cl:setf (cl:slot-value msg 'angle) (cl:make-string __ros_str_len))
-      (cl:dotimes (__ros_str_idx __ros_str_len msg)
-        (cl:setf (cl:char (cl:slot-value msg 'angle) __ros_str_idx) (cl:code-char (cl:read-byte istream)))))
+    (cl:let ((bits 0))
+      (cl:setf (cl:ldb (cl:byte 8 0) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 8) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 16) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 24) bits) (cl:read-byte istream))
+    (cl:setf (cl:slot-value msg 'angle) (roslisp-utils:decode-single-float-bits bits)))
   msg
 )
 (cl:defmethod roslisp-msg-protocol:ros-datatype ((msg (cl:eql '<PollServoAngle-response>)))
@@ -117,19 +114,19 @@
   "module_controller/PollServoAngleResponse")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<PollServoAngle-response>)))
   "Returns md5sum for a message object of type '<PollServoAngle-response>"
-  "215e9ffca1fdfc9cc62c2d805974a36e")
+  "58742bd1a1a5aa07bee05a873ed0f9aa")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'PollServoAngle-response)))
   "Returns md5sum for a message object of type 'PollServoAngle-response"
-  "215e9ffca1fdfc9cc62c2d805974a36e")
+  "58742bd1a1a5aa07bee05a873ed0f9aa")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<PollServoAngle-response>)))
   "Returns full string definition for message of type '<PollServoAngle-response>"
-  (cl:format cl:nil "string angle~%~%~%~%"))
+  (cl:format cl:nil "float32 angle~%~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql 'PollServoAngle-response)))
   "Returns full string definition for message of type 'PollServoAngle-response"
-  (cl:format cl:nil "string angle~%~%~%~%"))
+  (cl:format cl:nil "float32 angle~%~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:serialization-length ((msg <PollServoAngle-response>))
   (cl:+ 0
-     4 (cl:length (cl:slot-value msg 'angle))
+     4
 ))
 (cl:defmethod roslisp-msg-protocol:ros-message-to-list ((msg <PollServoAngle-response>))
   "Converts a ROS message object to a list"

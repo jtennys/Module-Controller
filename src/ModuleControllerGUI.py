@@ -26,15 +26,15 @@ class ModuleControllerGUI(threading.Thread):
 				# Don't print to an active servo box.  This is done
 				# to avoid overwriting user input.
 				if buttonList[i].get_active() == False:
-					rospy.wait_for_service('poll_servo_angle')
+					rospy.wait_for_service('poll_servo_angle', 1)
 					try:
 						poll_servo_angle = rospy.ServiceProxy('poll_servo_angle', PollServoAngle)
 						response = poll_servo_angle(i)
-						textBoxList[i].set_text(response.angle)
+						gtk.gdk.threads_enter()
+						textBoxList[i].set_text(str(response.angle))
+						gtk.gdk.threads_leave()
 					except rospy.ServiceException, e:
 						print "Service call failed: %s" % e
-
-					time.sleep(0.01)
 
 	def stop(self):
 		self.killthread.set()
@@ -54,6 +54,7 @@ class ModuleControllerGUI(threading.Thread):
 					# If "All" has been clicked on, check everything.
 					for i in range(1,numModules+1):
 						buttonList[i].set_active(True)
+
 						# Enable x y z entry since all modules are on.
 						for j in range(1,4):
 							textBoxList[numModules+j].set_editable(True)
@@ -61,6 +62,7 @@ class ModuleControllerGUI(threading.Thread):
 					# If "All" has been clicked off, uncheck everything.
 					for i in range(1,numModules+1):
 						buttonList[i].set_active(False)
+
 		elif cmp(data, "Send Coordinates") == 0:
 			if buttonList[0].get_active():
 				print textBoxList[numModules+1].get_text()
@@ -91,10 +93,19 @@ class ModuleControllerGUI(threading.Thread):
 				if allOn:
 					buttonList[0].set_active(True)
 				
-			# Set the correct text box to active when it is powered on.	
+			# Set the correct text box to active when it is powered on.
+			# Also, set the power to be on or off correctly.
 			for i in range(1,numModules+1):
 				if cmp(widget.get_label(),buttonList[i].get_label()) == 0:
 					textBoxList[i].set_editable(widget.get_active())
+					rospy.wait_for_service('set_servo_power', 0.1)
+					try:
+						set_servo_power = rospy.ServiceProxy('set_servo_power', SetServoPower)
+						response = set_servo_power(i,widget.get_active())
+						if response.Success:
+							print "Servo %d %s!" % (i, ("OFF", "ON")[widget.get_active()])
+					except rospy.ServiceException, e:
+						print "Service call failed: %s" % e
 
 	# Function that is called when an enter key is pressed in a text box.
 	def enter_callback(self, widget, entry):
@@ -351,4 +362,6 @@ window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 
 if __name__ == "__main__":
 	modGUI = ModuleControllerGUI(3)
+	gtk.gdk.threads_enter()
 	gtk.main()
+	gtk.gdk.threads_leave()

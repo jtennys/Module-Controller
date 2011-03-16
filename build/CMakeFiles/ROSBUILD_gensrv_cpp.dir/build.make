@@ -39,7 +39,26 @@ CMAKE_BINARY_DIR = /home/jason/ros_packages/module_controller/build
 
 # Utility rule file for ROSBUILD_gensrv_cpp.
 
+CMakeFiles/ROSBUILD_gensrv_cpp: ../srv_gen/cpp/include/module_controller/SetServoPower.h
 CMakeFiles/ROSBUILD_gensrv_cpp: ../srv_gen/cpp/include/module_controller/PollServoAngle.h
+
+../srv_gen/cpp/include/module_controller/SetServoPower.h: ../srv/SetServoPower.srv
+../srv_gen/cpp/include/module_controller/SetServoPower.h: /opt/ros/unstable/stacks/ros_comm/clients/cpp/roscpp/scripts/gensrv_cpp.py
+../srv_gen/cpp/include/module_controller/SetServoPower.h: /opt/ros/unstable/stacks/ros_comm/clients/cpp/roscpp/scripts/genmsg_cpp.py
+../srv_gen/cpp/include/module_controller/SetServoPower.h: /opt/ros/unstable/ros/core/roslib/scripts/gendeps
+../srv_gen/cpp/include/module_controller/SetServoPower.h: ../manifest.xml
+../srv_gen/cpp/include/module_controller/SetServoPower.h: /opt/ros/unstable/ros/tools/rospack/manifest.xml
+../srv_gen/cpp/include/module_controller/SetServoPower.h: /opt/ros/unstable/ros/core/roslib/manifest.xml
+../srv_gen/cpp/include/module_controller/SetServoPower.h: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/manifest.xml
+../srv_gen/cpp/include/module_controller/SetServoPower.h: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/manifest.xml
+../srv_gen/cpp/include/module_controller/SetServoPower.h: /opt/ros/unstable/ros/core/rosbuild/manifest.xml
+../srv_gen/cpp/include/module_controller/SetServoPower.h: /opt/ros/unstable/ros/core/roslang/manifest.xml
+../srv_gen/cpp/include/module_controller/SetServoPower.h: /opt/ros/unstable/stacks/ros_comm/clients/rospy/manifest.xml
+../srv_gen/cpp/include/module_controller/SetServoPower.h: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/msg_gen/generated
+../srv_gen/cpp/include/module_controller/SetServoPower.h: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/msg_gen/generated
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_1)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv_gen/cpp/include/module_controller/SetServoPower.h"
+	/opt/ros/unstable/stacks/ros_comm/clients/cpp/roscpp/scripts/gensrv_cpp.py /home/jason/ros_packages/module_controller/srv/SetServoPower.srv
 
 ../srv_gen/cpp/include/module_controller/PollServoAngle.h: ../srv/PollServoAngle.srv
 ../srv_gen/cpp/include/module_controller/PollServoAngle.h: /opt/ros/unstable/stacks/ros_comm/clients/cpp/roscpp/scripts/gensrv_cpp.py
@@ -55,11 +74,12 @@ CMakeFiles/ROSBUILD_gensrv_cpp: ../srv_gen/cpp/include/module_controller/PollSer
 ../srv_gen/cpp/include/module_controller/PollServoAngle.h: /opt/ros/unstable/stacks/ros_comm/clients/rospy/manifest.xml
 ../srv_gen/cpp/include/module_controller/PollServoAngle.h: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/msg_gen/generated
 ../srv_gen/cpp/include/module_controller/PollServoAngle.h: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/msg_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_1)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_2)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv_gen/cpp/include/module_controller/PollServoAngle.h"
 	/opt/ros/unstable/stacks/ros_comm/clients/cpp/roscpp/scripts/gensrv_cpp.py /home/jason/ros_packages/module_controller/srv/PollServoAngle.srv
 
 ROSBUILD_gensrv_cpp: CMakeFiles/ROSBUILD_gensrv_cpp
+ROSBUILD_gensrv_cpp: ../srv_gen/cpp/include/module_controller/SetServoPower.h
 ROSBUILD_gensrv_cpp: ../srv_gen/cpp/include/module_controller/PollServoAngle.h
 ROSBUILD_gensrv_cpp: CMakeFiles/ROSBUILD_gensrv_cpp.dir/build.make
 .PHONY : ROSBUILD_gensrv_cpp
