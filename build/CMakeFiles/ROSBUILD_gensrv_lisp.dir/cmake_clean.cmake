@@ -9,12 +9,18 @@ FILE(REMOVE_RECURSE
   "../srv_gen/lisp/SetServoAngle.lisp"
   "../srv_gen/lisp/_package.lisp"
   "../srv_gen/lisp/_package_SetServoAngle.lisp"
+  "../srv_gen/lisp/GetModuleOffset.lisp"
+  "../srv_gen/lisp/_package.lisp"
+  "../srv_gen/lisp/_package_GetModuleOffset.lisp"
   "../srv_gen/lisp/GetServoPower.lisp"
   "../srv_gen/lisp/_package.lisp"
   "../srv_gen/lisp/_package_GetServoPower.lisp"
   "../srv_gen/lisp/GetServoAngle.lisp"
   "../srv_gen/lisp/_package.lisp"
   "../srv_gen/lisp/_package_GetServoAngle.lisp"
+  "../srv_gen/lisp/GetModuleLengths.lisp"
+  "../srv_gen/lisp/_package.lisp"
+  "../srv_gen/lisp/_package_GetModuleLengths.lisp"
 )
 
 # Per-language clean rules from dependency scanning.

@@ -52,6 +52,9 @@ def handle_get_servo_angle(req):
 	# Pull in our angles array so we can store the angle for error checking.
 	global servoAngles
 
+	# Pull in our angle offsets so we can correctly alter the angles.
+	global angleOffset
+
 	# Pull in our total number of modules so that we don't allow an invalid index.
 	global numModules
 
@@ -74,11 +77,10 @@ def handle_get_servo_angle(req):
 		# Check the response string for validity and return the result.
 		response = response_check(response)
 
-		# Convert the result of the response format check to float.
-		tempAngle = convert_to_angle(int(response,10),2)
+		if int(response,10):
+			# Convert the result of the response format check to float.
+			tempAngle = convert_to_angle(int(response,10) - angleOffset[req.ID],2)
 
-		# If we have a nonzero value, store it. Otherwise, return the previous good value.
-		if tempAngle:
 			servoAngles[req.ID] = tempAngle
 
 		# Return the floating point angle.
@@ -93,12 +95,15 @@ def handle_set_servo_angle(req):
 	# Pull in our angles array so we can store the angle for error checking.
 	global servoAngles
 
+	# Pull in our angle offsets so we can correctly alter the angles.
+	global angleOffset
+
 	# Pull in our total number of modules so that we don't allow an invalid index.
 	global numModules
 
 	if (req.ID <= numModules) and (req.ID > 0):
 		# Create the command.
-		command = "w," + str(req.ID) + ",a," + str(convert_from_angle(req.Angle)) + ";"
+		command = "w," + str(req.ID) + ",a," + str(convert_from_angle(req.Angle) + angleOffset[req.ID]) + ";"
 
 		# Grab the serial port.
 		serialCommEnter()
@@ -189,6 +194,29 @@ def handle_set_servo_power(req):
 		# Return a failure.
 		return SetServoPowerResponse(0)
 
+def handle_get_module_lengths(req):
+	# Pull in the length arrays and module number.
+	global upstreamLength
+	global downstreamLength
+	global numModules
+
+	if (req.ID <= numModules) and (req.ID > 0):
+		# Return the values.
+		return GetModuleLengthsResponse(upstreamLength[req.ID],downstreamLength[req.ID])
+	else:
+		return GetModuleLengthsResponse(0,0)
+
+def handle_get_module_offset(req):
+	# Pull in the length arrays and module number.
+	global angleOffset
+	global numModules
+
+	if (req.ID <= numModules) and (req.ID > 0):
+		# Return the values.
+		return GetModuleOffsetResponse(angleOffset[req.ID])
+	else:
+		return GetModuleOffsetResponse(0)
+
 def get_servo_angle_server():
 	# Pull in the global module values for initialization.
 	global servoAngles
@@ -220,6 +248,95 @@ def set_servo_angle_server():
 def set_servo_power_server():
 	# Start the handle servo power service.
 	s = rospy.Service('set_servo_power', SetServoPower, handle_set_servo_power)
+
+def get_module_lengths_server():
+	# Pull in the length arrays and module number.
+	global upstreamLength
+	global downstreamLength
+	global numModules
+
+	# Create temporary integer variables for error checking.
+	tempResponse1 = 0
+	tempResponse2 = 0
+
+	# Pad the front of the array since our IDs start at 1.
+	upstreamLength.append(0.0)
+	downstreamLength.append(0.0)
+
+	# Grab the serial port.
+	serialCommEnter()
+
+	# Append zero values for all possible module IDs.
+	for i in range(1,numModules+1):
+		# Create the command.
+		command = "r," + str(i) + ",l;"
+
+		while not (tempResponse1 and tempResponse2):
+			# Write the command to the robot.
+			robotComm.write(command)
+
+			# Read the responses from the robot.
+			response1 = robotComm.readline()
+			response2 = robotComm.readline()
+
+			# Check the response strings for validity and return the results.
+			response1 = response_check(response1)
+			response2 = response_check(response2)
+
+			# Convert the results of the response format checks to ints.
+			tempResponse1 = int(response1,10)
+			tempResponse2 = int(response2,10)
+
+		# Convert the responses to mm and store them.
+		upstreamLength.append(tempResponse1/100.0)
+		downstreamLength.append(tempResponse2/100.0)
+
+	# Release the serial port.
+	serialCommExit()
+
+	# Start the poll angle service.
+	s = rospy.Service('get_module_lengths', GetModuleLengths, handle_get_module_lengths)
+
+def get_module_offset_server():
+	# Pull in the length arrays and module number.
+	global angleOffset
+	global numModules
+
+	# Create temporary integer variable for error checking.
+	tempResponse = 0
+
+	# Pad the front of the array since our IDs start at 1.
+	angleOffset.append(0)
+
+	# Grab the serial port.
+	serialCommEnter()
+
+	# Append zero values for all possible module IDs.
+	for i in range(1,numModules+1):
+		# Create the command.
+		command = "r," + str(i) + ",o;"
+
+		while not tempResponse:
+			# Write the command to the robot.
+			robotComm.write(command)
+
+			# Read the response from the robot.
+			response = robotComm.readline()
+
+			# Check the response string for validity and return the result.
+			response = response_check(response)
+
+			# Convert the results of the response format checks to ints.
+			tempResponse = int(response,10)
+
+		# Convert the responses to mm and store them.
+		angleOffset.append(tempResponse)
+
+	# Release the serial port.
+	serialCommExit()
+
+	# Start the poll angle service.
+	s = rospy.Service('get_module_offset', GetModuleOffset, handle_get_module_offset)
 	
 def start_robot_database():
 	# Pull in the serial object and module number so we can initialize that number.
@@ -257,6 +374,8 @@ def start_robot_database():
 	set_servo_angle_server()
 	get_servo_power_server()
 	set_servo_power_server()
+	get_module_lengths_server()
+	get_module_offset_server()
 
 # Here are our global data variables...
 # 
@@ -266,6 +385,12 @@ servoAngles = []
 servoPower = []
 # An array that holds all of the servo speeds.
 servoSpeed = []
+# An array that holds all upstream module lengths (mm).
+upstreamLength = []
+# An array that holds all upstream module lengths (mm).
+downstreamLength = []
+# An array that holds the integer offsets required for module center.
+angleOffset = []
 # The number of modules this system has.
 numModules = 0
 
