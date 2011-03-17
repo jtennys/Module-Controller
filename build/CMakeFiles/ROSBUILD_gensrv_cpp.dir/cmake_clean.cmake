@@ -5,6 +5,7 @@ FILE(REMOVE_RECURSE
   "CMakeFiles/ROSBUILD_gensrv_cpp"
   "../srv_gen/cpp/include/module_controller/SetServoPower.h"
   "../srv_gen/cpp/include/module_controller/SetServoAngle.h"
+  "../srv_gen/cpp/include/module_controller/GetServoPower.h"
   "../srv_gen/cpp/include/module_controller/GetServoAngle.h"
 )
 

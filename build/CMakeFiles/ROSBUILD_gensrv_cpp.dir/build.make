@@ -41,6 +41,7 @@ CMAKE_BINARY_DIR = /home/jason/ros_packages/module_controller/build
 
 CMakeFiles/ROSBUILD_gensrv_cpp: ../srv_gen/cpp/include/module_controller/SetServoPower.h
 CMakeFiles/ROSBUILD_gensrv_cpp: ../srv_gen/cpp/include/module_controller/SetServoAngle.h
+CMakeFiles/ROSBUILD_gensrv_cpp: ../srv_gen/cpp/include/module_controller/GetServoPower.h
 CMakeFiles/ROSBUILD_gensrv_cpp: ../srv_gen/cpp/include/module_controller/GetServoAngle.h
 
 ../srv_gen/cpp/include/module_controller/SetServoPower.h: ../srv/SetServoPower.srv
@@ -79,6 +80,24 @@ CMakeFiles/ROSBUILD_gensrv_cpp: ../srv_gen/cpp/include/module_controller/GetServ
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv_gen/cpp/include/module_controller/SetServoAngle.h"
 	/opt/ros/unstable/stacks/ros_comm/clients/cpp/roscpp/scripts/gensrv_cpp.py /home/jason/ros_packages/module_controller/srv/SetServoAngle.srv
 
+../srv_gen/cpp/include/module_controller/GetServoPower.h: ../srv/GetServoPower.srv
+../srv_gen/cpp/include/module_controller/GetServoPower.h: /opt/ros/unstable/stacks/ros_comm/clients/cpp/roscpp/scripts/gensrv_cpp.py
+../srv_gen/cpp/include/module_controller/GetServoPower.h: /opt/ros/unstable/stacks/ros_comm/clients/cpp/roscpp/scripts/genmsg_cpp.py
+../srv_gen/cpp/include/module_controller/GetServoPower.h: /opt/ros/unstable/ros/core/roslib/scripts/gendeps
+../srv_gen/cpp/include/module_controller/GetServoPower.h: ../manifest.xml
+../srv_gen/cpp/include/module_controller/GetServoPower.h: /opt/ros/unstable/ros/tools/rospack/manifest.xml
+../srv_gen/cpp/include/module_controller/GetServoPower.h: /opt/ros/unstable/ros/core/roslib/manifest.xml
+../srv_gen/cpp/include/module_controller/GetServoPower.h: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/manifest.xml
+../srv_gen/cpp/include/module_controller/GetServoPower.h: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/manifest.xml
+../srv_gen/cpp/include/module_controller/GetServoPower.h: /opt/ros/unstable/ros/core/rosbuild/manifest.xml
+../srv_gen/cpp/include/module_controller/GetServoPower.h: /opt/ros/unstable/ros/core/roslang/manifest.xml
+../srv_gen/cpp/include/module_controller/GetServoPower.h: /opt/ros/unstable/stacks/ros_comm/clients/rospy/manifest.xml
+../srv_gen/cpp/include/module_controller/GetServoPower.h: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/msg_gen/generated
+../srv_gen/cpp/include/module_controller/GetServoPower.h: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/msg_gen/generated
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_3)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv_gen/cpp/include/module_controller/GetServoPower.h"
+	/opt/ros/unstable/stacks/ros_comm/clients/cpp/roscpp/scripts/gensrv_cpp.py /home/jason/ros_packages/module_controller/srv/GetServoPower.srv
+
 ../srv_gen/cpp/include/module_controller/GetServoAngle.h: ../srv/GetServoAngle.srv
 ../srv_gen/cpp/include/module_controller/GetServoAngle.h: /opt/ros/unstable/stacks/ros_comm/clients/cpp/roscpp/scripts/gensrv_cpp.py
 ../srv_gen/cpp/include/module_controller/GetServoAngle.h: /opt/ros/unstable/stacks/ros_comm/clients/cpp/roscpp/scripts/genmsg_cpp.py
@@ -93,13 +112,14 @@ CMakeFiles/ROSBUILD_gensrv_cpp: ../srv_gen/cpp/include/module_controller/GetServ
 ../srv_gen/cpp/include/module_controller/GetServoAngle.h: /opt/ros/unstable/stacks/ros_comm/clients/rospy/manifest.xml
 ../srv_gen/cpp/include/module_controller/GetServoAngle.h: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/msg_gen/generated
 ../srv_gen/cpp/include/module_controller/GetServoAngle.h: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/msg_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_3)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_4)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv_gen/cpp/include/module_controller/GetServoAngle.h"
 	/opt/ros/unstable/stacks/ros_comm/clients/cpp/roscpp/scripts/gensrv_cpp.py /home/jason/ros_packages/module_controller/srv/GetServoAngle.srv
 
 ROSBUILD_gensrv_cpp: CMakeFiles/ROSBUILD_gensrv_cpp
 ROSBUILD_gensrv_cpp: ../srv_gen/cpp/include/module_controller/SetServoPower.h
 ROSBUILD_gensrv_cpp: ../srv_gen/cpp/include/module_controller/SetServoAngle.h
+ROSBUILD_gensrv_cpp: ../srv_gen/cpp/include/module_controller/GetServoPower.h
 ROSBUILD_gensrv_cpp: ../srv_gen/cpp/include/module_controller/GetServoAngle.h
 ROSBUILD_gensrv_cpp: CMakeFiles/ROSBUILD_gensrv_cpp.dir/build.make
 .PHONY : ROSBUILD_gensrv_cpp

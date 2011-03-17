@@ -22,6 +22,41 @@ class ModuleControllerGUI(threading.Thread):
 		global numModules
 		global angleUnit
 		
+		# Initialize the power toggle boxes.
+		for i in range(1,numModules+1):
+			# Get the current power status for all servos.
+			rospy.wait_for_service('get_servo_angle', 1)
+			try:
+				get_servo_power = rospy.ServiceProxy('get_servo_power', GetServoPower)
+				response = get_servo_power(i)
+
+				gtk.gdk.threads_enter()
+				buttonList[i].set_active(response.Power)
+				gtk.gdk.threads_leave()
+			except rospy.ServiceException, e:
+				print "Service call failed: %s" % e
+
+		# Initialize the servo angles.
+		for i in range(1,numModules+1):
+			# Get the current angle for all servos.
+			rospy.wait_for_service('get_servo_angle', 1)
+			try:
+				get_servo_angle = rospy.ServiceProxy('get_servo_angle', GetServoAngle)
+				response = get_servo_angle(i)
+				angle = 0.0
+				if cmp(angleUnit,"radians") == 0:
+					angle = response.Angle*(3.14159/180.0)
+				else:
+					angle = response.Angle
+
+				gtk.gdk.threads_enter()
+				textBoxList[i].set_text(str(angle))
+				gtk.gdk.threads_leave()
+			except rospy.ServiceException, e:
+				print "Service call failed: %s" % e
+
+
+
 		while not (self.killthread.isSet() or rospy.is_shutdown()):
 			for i in range(1,numModules+1):
 				# Don't print to an active servo box.  This is done

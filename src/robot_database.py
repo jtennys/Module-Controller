@@ -20,25 +20,14 @@ def serialCommExit():
 	serialInUse = 0
 
 def response_check(response):
+	formattedResponse = '0'
+
 	# If we have a valid response, we extract the numbers.
-        if len(response) >= 3:
-                response = response[1:-1]
-        else:
-                response = '0'
+	for i in range(0,len(response)):
+		if (response[i] >= '0') and (response[i] <= '9'):
+			formattedResponse += response[i]
 
-        # This variable is created as a check that this is decimal.
-        valid = True
-
-        # If all numbers are base 10, we exit with valid as True.
-        for i in range(0,len(response)):
-                if (response[i] < '0') or (response[i] > '9'):
-                        valid = False
-
-	# If the response is not valid, set the response to 0.
-	if not valid:
-		response = '0'
-
-	return response
+	return formattedResponse
 
 def convert_to_angle(intVal, precision):
 	# Obtain our precision factor.
@@ -111,8 +100,6 @@ def handle_set_servo_angle(req):
 		# Create the command.
 		command = "w," + str(req.ID) + ",a," + str(convert_from_angle(req.Angle)) + ";"
 
-		print command
-
 		# Grab the serial port.
 		serialCommEnter()
 
@@ -129,6 +116,46 @@ def handle_set_servo_angle(req):
 		return SetServoAngleResponse(1)
 	else:
 		return SetServoAngleResponse(0)
+
+def handle_get_servo_power(req):
+	# Pull our serial port object in from the global scope.
+	global robotComm
+
+	# Pull in our angles array so we can store the angle for error checking.
+	global servoPower
+
+	# Pull in our total number of modules so that we don't allow an invalid index.
+	global numModules
+
+	if (req.ID <= numModules) and (req.ID > 0):
+		# Create the command.
+		command = "r," + str(req.ID) + ",p;"
+
+		# Grab the serial port.
+		serialCommEnter()
+
+		# Write the command to the robot.
+		robotComm.write(command)
+
+		# Read the command from the robot.
+		response = robotComm.readline()
+
+		# Release the serial port.
+		serialCommExit()
+
+		# Check the response string for validity and return the result.
+		response = response_check(response)
+
+		# Convert the result of the response format check to int.
+		tempResponse = int(response,10)
+
+		if (tempResponse == 0) or (tempResponse == 1):
+			servoPower[req.ID] = tempResponse
+
+		# Return success.
+		return GetServoPowerResponse(servoPower[req.ID])
+	else:
+		return GetServoPowerResponse(0)
 
 def handle_set_servo_power(req):
 	# Pull our serial port object in from the global scope.
@@ -174,11 +201,7 @@ def get_servo_angle_server():
 	# Start the poll angle service.
 	s = rospy.Service('get_servo_angle', GetServoAngle, handle_get_servo_angle)
 
-def set_servo_angle_server():
-	# Start the set angle service.
-	s = rospy.Service('set_servo_angle', SetServoAngle, handle_set_servo_angle)
-
-def set_servo_power_server():
+def get_servo_power_server():
 	# Pull in the power boolean array and module number.
 	global servoPower
 	global numModules
@@ -187,6 +210,14 @@ def set_servo_power_server():
 	for i in range(0,numModules+1):
 		servoPower.append(False)
 
+	# Start the poll angle service.
+	s = rospy.Service('get_servo_power', GetServoPower, handle_get_servo_power)
+
+def set_servo_angle_server():
+	# Start the set angle service.
+	s = rospy.Service('set_servo_angle', SetServoAngle, handle_set_servo_angle)
+
+def set_servo_power_server():
 	# Start the handle servo power service.
 	s = rospy.Service('set_servo_power', SetServoPower, handle_set_servo_power)
 	
@@ -195,8 +226,28 @@ def start_robot_database():
 	global numModules
 	global robotComm
 
+	# Create the command.
+	command = "n;"
+
+	# Grab the serial port.
+	serialCommEnter()
+
 	# Find out how many modules the robot has found.
-	numModules = 3
+	while not numModules:
+		# Write the command to the robot.
+		robotComm.write(command)
+
+		# Read the command from the robot.
+		response = robotComm.readline()
+
+		# Check the response string for validity and return the result.
+		response = response_check(response)
+
+		if int(response):
+			numModules = int(response)
+
+	# Release the serial port.
+	serialCommExit()
 
 	# Initialize the server.
 	rospy.init_node('robot_data_server')
@@ -204,6 +255,7 @@ def start_robot_database():
 	# Start the services.
 	get_servo_angle_server()
 	set_servo_angle_server()
+	get_servo_power_server()
 	set_servo_power_server()
 
 # Here are our global data variables...

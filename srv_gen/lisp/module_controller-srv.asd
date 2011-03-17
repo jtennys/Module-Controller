@@ -8,6 +8,8 @@
     (:file "_package_SetServoPower" :depends-on ("_package"))
     (:file "SetServoAngle" :depends-on ("_package_SetServoAngle"))
     (:file "_package_SetServoAngle" :depends-on ("_package"))
+    (:file "GetServoPower" :depends-on ("_package_GetServoPower"))
+    (:file "_package_GetServoPower" :depends-on ("_package"))
     (:file "GetServoAngle" :depends-on ("_package_GetServoAngle"))
     (:file "_package_GetServoAngle" :depends-on ("_package"))
   ))
