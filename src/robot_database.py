@@ -217,27 +217,28 @@ def handle_get_module_offset(req):
 	else:
 		return GetModuleOffsetResponse(0)
 
-def get_servo_angle_server():
-	# Pull in the global module values for initialization.
-	global servoAngles
+def handle_get_module_twist(req):
+	# Pull in the length arrays and module number.
+	global moduleTwist
 	global numModules
 
-	# Append zero values for all possible module IDs.
-	for i in range(0,numModules+1):
-		servoAngles.append(0.0)
+	if (req.ID < numModules) and (req.ID > 0):
+		# Return the values.
+		return GetModuleTwistResponse(moduleTwist[req.ID])
+	else:
+		return GetModuleTwistResponse(0)
 
+def handle_get_module_total(req):
+	# Pull in the module number.
+	global numModules
+
+	return GetModuleTotalResponse(numModules)
+
+def get_servo_angle_server():
 	# Start the poll angle service.
 	s = rospy.Service('get_servo_angle', GetServoAngle, handle_get_servo_angle)
 
 def get_servo_power_server():
-	# Pull in the power boolean array and module number.
-	global servoPower
-	global numModules
-
-	# Append zero values for all possible module IDs.
-	for i in range(0,numModules+1):
-		servoPower.append(False)
-
 	# Start the poll angle service.
 	s = rospy.Service('get_servo_power', GetServoPower, handle_get_servo_power)
 
@@ -250,98 +251,45 @@ def set_servo_power_server():
 	s = rospy.Service('set_servo_power', SetServoPower, handle_set_servo_power)
 
 def get_module_lengths_server():
-	# Pull in the length arrays and module number.
-	global upstreamLength
-	global downstreamLength
-	global numModules
-
-	# Create temporary integer variables for error checking.
-	tempResponse1 = 0
-	tempResponse2 = 0
-
-	# Pad the front of the array since our IDs start at 1.
-	upstreamLength.append(0.0)
-	downstreamLength.append(0.0)
-
-	# Grab the serial port.
-	serialCommEnter()
-
-	# Append zero values for all possible module IDs.
-	for i in range(1,numModules+1):
-		# Create the command.
-		command = "r," + str(i) + ",l;"
-
-		while not (tempResponse1 and tempResponse2):
-			# Write the command to the robot.
-			robotComm.write(command)
-
-			# Read the responses from the robot.
-			response1 = robotComm.readline()
-			response2 = robotComm.readline()
-
-			# Check the response strings for validity and return the results.
-			response1 = response_check(response1)
-			response2 = response_check(response2)
-
-			# Convert the results of the response format checks to ints.
-			tempResponse1 = int(response1,10)
-			tempResponse2 = int(response2,10)
-
-		# Convert the responses to mm and store them.
-		upstreamLength.append(tempResponse1/100.0)
-		downstreamLength.append(tempResponse2/100.0)
-
-	# Release the serial port.
-	serialCommExit()
-
 	# Start the poll angle service.
 	s = rospy.Service('get_module_lengths', GetModuleLengths, handle_get_module_lengths)
 
 def get_module_offset_server():
-	# Pull in the length arrays and module number.
-	global angleOffset
-	global numModules
-
-	# Create temporary integer variable for error checking.
-	tempResponse = 0
-
-	# Pad the front of the array since our IDs start at 1.
-	angleOffset.append(0)
-
-	# Grab the serial port.
-	serialCommEnter()
-
-	# Append zero values for all possible module IDs.
-	for i in range(1,numModules+1):
-		# Create the command.
-		command = "r," + str(i) + ",o;"
-
-		while not tempResponse:
-			# Write the command to the robot.
-			robotComm.write(command)
-
-			# Read the response from the robot.
-			response = robotComm.readline()
-
-			# Check the response string for validity and return the result.
-			response = response_check(response)
-
-			# Convert the results of the response format checks to ints.
-			tempResponse = int(response,10)
-
-		# Convert the responses to mm and store them.
-		angleOffset.append(tempResponse)
-
-	# Release the serial port.
-	serialCommExit()
-
 	# Start the poll angle service.
 	s = rospy.Service('get_module_offset', GetModuleOffset, handle_get_module_offset)
+
+def get_module_twist_server():
+	# Start the poll angle service.
+	s = rospy.Service('get_module_twist', GetModuleTwist, handle_get_module_twist)
+
+def get_module_total_server():
+	# Start the poll angle service.
+	s = rospy.Service('get_module_total', GetModuleTotal, handle_get_module_total)
 	
 def start_robot_database():
 	# Pull in the serial object and module number so we can initialize that number.
 	global numModules
+	global moduleType
+	global moduleTwist
+	global angleOffset
+	global upstreamLength
+	global downstreamLength
+	global childPort
+	global servoPower
+	global servoAngles
 	global robotComm
+
+	# Pad the front of the these arrays.
+	moduleType.append(0)
+	moduleTwist.append(0.0)
+	angleOffset.append(0)
+	upstreamLength.append(0.0)
+	downstreamLength.append(0.0)
+	servoPower.append(False)
+	servoAngles.append(0.0)
+
+	# We currently only have one master port.
+	childPort.append(0)
 
 	# Create the command.
 	command = "n;"
@@ -363,8 +311,65 @@ def start_robot_database():
 		if int(response):
 			numModules = int(response)
 
+	# Find the module type and child port values.
+	for i in range(1,numModules+1):
+		# Initialize these values to zero.
+		moduleType.append(0)
+		servoPower.append(False)
+		servoAngles.append(0.0)
+
+		# Find the module types for the range of numModules.
+		command = "r," + str(i) + ",t;"
+		while not moduleType[i]:
+			# Write the command to the robot.
+			robotComm.write(command)
+
+			# Read the response from the robot.
+			response = robotComm.readline()
+
+			# Check the response string for validity and return the result.
+			response = response_check(response)
+
+			# Convert the results of the response format checks to int.
+			moduleType[i] = int(response,10)
+
+	for i in range(1,numModules):
+		childPort.append(0)
+
+		# Now find the child ports for the range of numModules.
+		command = "r," + str(i) + ",c;"
+
+		while not childPort[i]:
+			# Write the command to the robot.
+			robotComm.write(command)
+
+			# Read the response from the robot.
+			response = robotComm.readline()
+
+			# Check the response string for validity and return the result.
+			response = response_check(response)
+
+			# Convert the results of the response format checks to int.
+			childPort[i] = int(response,10)
+
+	# Add an extra child port to the end of the array to avoid misaligned calculations.
+	childPort.append(1)
+
 	# Release the serial port.
 	serialCommExit()
+
+	# Fill in the rest of the values since we know module type.
+	for i in range(1,numModules+1):
+		if moduleType[i] == 1:
+			moduleTwist.append((childPort[i] - 1)*90.0)
+			angleOffset.append(511)
+			upstreamLength.append(50.0)
+			downstreamLength.append(50.0)
+		else:
+			moduleTwist.append(0.0)
+			angleOffset.append(0)
+			upstreamLength.append(0.0)
+			downstreamLength.append(0.0)
 
 	# Initialize the server.
 	rospy.init_node('robot_data_server')
@@ -376,6 +381,8 @@ def start_robot_database():
 	set_servo_power_server()
 	get_module_lengths_server()
 	get_module_offset_server()
+	get_module_twist_server()
+	get_module_total_server()
 
 # Here are our global data variables...
 # 
@@ -391,6 +398,12 @@ upstreamLength = []
 downstreamLength = []
 # An array that holds the integer offsets required for module center.
 angleOffset = []
+# An array that holds the port number that each module's child is attached to.
+childPort = []
+# An array that holds the floating point angle value of the module twists.
+moduleTwist = []
+# An array that holds the integer values of all module types.
+moduleType = []
 # The number of modules this system has.
 numModules = 0
 

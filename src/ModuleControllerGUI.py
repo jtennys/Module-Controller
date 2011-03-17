@@ -417,7 +417,14 @@ distanceUnit = "inches"
 window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 
 if __name__ == "__main__":
-	modGUI = ModuleControllerGUI(3)
+	rospy.wait_for_service('get_module_total', 1)
+	try:
+		get_module_total = rospy.ServiceProxy('get_module_total', GetModuleTotal)
+		response = get_module_total(1)
+		ModuleControllerGUI(response.Total)
+	except rospy.ServiceException, e:
+		print "Service call failed: %s" % e
+
 	gtk.gdk.threads_enter()
 	gtk.main()
 	gtk.gdk.threads_leave()
