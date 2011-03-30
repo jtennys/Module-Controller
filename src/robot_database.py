@@ -6,19 +6,28 @@ import serial
 import threading
 import time
 
+# The following pair of functions provide thread safety for our node, since
+# it has a possibility for multiple threads to be using the serial port.
 def serialCommEnter():
+	# Pull in the global variable serialInUse for checking and modifying.
 	global serialInUse
 
+	# While it is in use by a thread, do nothing.
 	while serialInUse:
 		doNothing = 0
 
+	# Yoink.
 	serialInUse = 1
 
 def serialCommExit():
+	# Pull in the global variable serialInUse to deactivate it.
 	global serialInUse
 
+	# All done.
 	serialInUse = 0
 
+# This function takes a string and makes sure it is in decimal before
+# we convert it. Otherwise, we just send a string with a 0 in it.
 def response_check(response):
 	formattedResponse = '0'
 
@@ -29,6 +38,8 @@ def response_check(response):
 
 	return formattedResponse
 
+# This function converts an integer position value from the servo to a floating
+# point representation with the given amount of precision.
 def convert_to_angle(intVal, precision):
 	# Obtain our precision factor.
 	precisionFactor = 10**precision
@@ -41,10 +52,12 @@ def convert_to_angle(intVal, precision):
 
 	return angle
 
+# Converts a user's input angle from degrees to an integer that the servo likes.
 def convert_from_angle(floatVal):
 	# Return the integer value.
 	return int((floatVal/300.0)*1023)
 
+# Function that handles requests for servo angle.
 def handle_get_servo_angle(req):
 	# Pull our serial port object in from the global scope.
 	global robotComm
@@ -88,6 +101,7 @@ def handle_get_servo_angle(req):
 	else:
 		return GetServoAngleResponse(servoAngles[0])
 
+# Function that handles requests to send the servo to a specific angle.
 def handle_set_servo_angle(req):
 	# Pull our serial port object in from the global scope.
 	global robotComm
@@ -122,6 +136,8 @@ def handle_set_servo_angle(req):
 	else:
 		return SetServoAngleResponse(0)
 
+# Function that handles a request to get the servo power status. This is useful for when
+# this node is launched after the robot has been in use (we can't assume no torque).
 def handle_get_servo_power(req):
 	# Pull our serial port object in from the global scope.
 	global robotComm
@@ -162,6 +178,8 @@ def handle_get_servo_power(req):
 	else:
 		return GetServoPowerResponse(0)
 
+# This function sets the servo power on and off, which allows manual movement
+# of the servo with all of the feedback enabled.
 def handle_set_servo_power(req):
 	# Pull our serial port object in from the global scope.
 	global robotComm
@@ -194,6 +212,7 @@ def handle_set_servo_power(req):
 		# Return a failure.
 		return SetServoPowerResponse(0)
 
+# This function handles a request by a computation node to get a module's length.
 def handle_get_module_lengths(req):
 	# Pull in the length arrays and module number.
 	global upstreamLength
@@ -206,6 +225,7 @@ def handle_get_module_lengths(req):
 	else:
 		return GetModuleLengthsResponse(0,0)
 
+# This function handles a request by a computation node to get a module's zero angle offset.
 def handle_get_module_offset(req):
 	# Pull in the length arrays and module number.
 	global angleOffset
@@ -217,6 +237,7 @@ def handle_get_module_offset(req):
 	else:
 		return GetModuleOffsetResponse(0)
 
+# This function handles a request by a computation node to get a module's link twist.
 def handle_get_module_twist(req):
 	# Pull in the length arrays and module number.
 	global moduleTwist
@@ -228,12 +249,14 @@ def handle_get_module_twist(req):
 	else:
 		return GetModuleTwistResponse(0)
 
+# This function returns the module total to whoever wants to know.
 def handle_get_module_total(req):
 	# Pull in the module number.
 	global numModules
 
 	return GetModuleTotalResponse(numModules)
 
+# The following functions simply start their respective services.
 def get_servo_angle_server():
 	# Start the poll angle service.
 	s = rospy.Service('get_servo_angle', GetServoAngle, handle_get_servo_angle)
@@ -374,6 +397,10 @@ def start_robot_database():
 	# Initialize the server.
 	rospy.init_node('robot_data_server')
 
+	for i in range(1,numModules+1):
+		print "Module %d to %d is a twist of %f degrees." % (i,i+1,moduleTwist[i])
+
+
 	# Start the services.
 	get_servo_angle_server()
 	set_servo_angle_server()
@@ -416,7 +443,7 @@ robotComm = serial.Serial(port = '/dev/ttyUSB0',\
                           bytesize = 8,\
                           parity = 'N',\
                           stopbits = 1,\
-                          timeout = 0.005)
+                          timeout = 0.01)
 
 if __name__ == "__main__":
 	# Start all of this database's services and functions.

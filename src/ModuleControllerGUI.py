@@ -12,10 +12,12 @@ import gtk
 # Initialize the gtk thread engine.
 gtk.gdk.threads_init()
 
+# This class is an instance (a window) of the modular robot controller GUI.
 class ModuleControllerGUI(threading.Thread):
 	# Create the killthread event for stopping the thread.
 	killthread = threading.Event()
 
+	# This function is called when this object is "started".
 	def run(self):
 		global buttonList
 		global textBoxList
@@ -56,10 +58,10 @@ class ModuleControllerGUI(threading.Thread):
 				print "Service call failed: %s" % e
 
 
-
+		# While the user hasn't closed the window or pressed ctrl+c.
 		while not (self.killthread.isSet() or rospy.is_shutdown()):
 			for i in range(1,numModules+1):
-				# Don't print to an active servo box.  This is done
+				# Don't print to an active servo box. This is done
 				# to avoid overwriting user input.
 				if buttonList[i].get_active() == False:
 					rospy.wait_for_service('get_servo_angle', 1)
@@ -78,6 +80,7 @@ class ModuleControllerGUI(threading.Thread):
 					except rospy.ServiceException, e:
 						print "Service call failed: %s" % e
 
+	# Set the killthread variable.
 	def stop(self):
 		self.killthread.set()
 		
@@ -176,7 +179,8 @@ class ModuleControllerGUI(threading.Thread):
 							response = set_servo_angle(i, angle)
 				except rospy.ServiceException, e:
 					print "Service call failed: %s" % e
-		
+	
+	# This is the callback function for if the angle dropdown menu option is changed.	
 	def angle_change(self, widget):
 		global angleUnit
 			
@@ -201,7 +205,8 @@ class ModuleControllerGUI(threading.Thread):
 				textBoxList[i].set_text(str(angle))
 
 		angleUnit = tempString
-			
+
+	# This is the callback function for if the distance unit menu option is changed.			
 	def distance_change(self, widget):
 		global numModules
 		global textBoxList
@@ -270,11 +275,12 @@ class ModuleControllerGUI(threading.Thread):
 			
 		distanceUnit = tempString
 
+	# This custom destroy function stops the thread function before it dies.
 	def destroy(self, widget, data=None):
 		self.stop()
 		gtk.main_quit()
 		
-
+	# This function initializes the window and its values.
 	def __init__(self, *args):
 		threading.Thread.__init__(self)
 
@@ -408,16 +414,18 @@ precision = 2
 # changing every other box.
 notAll = True
 
-# Store the angle unit (starts as degrees)
+# Store the angle unit (starts as degrees).
 angleUnit = "degrees"
 	
-# Store the distance unit (starts as inches)
+# Store the distance unit (starts as inches).
 distanceUnit = "inches"
 
+# Our GUI window object.
 window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 
 if __name__ == "__main__":
-	rospy.wait_for_service('get_module_total', 1)
+	# Wait until we find the number of modules (which also means comm is established).
+	rospy.wait_for_service('get_module_total')
 	try:
 		get_module_total = rospy.ServiceProxy('get_module_total', GetModuleTotal)
 		response = get_module_total(1)
@@ -425,6 +433,7 @@ if __name__ == "__main__":
 	except rospy.ServiceException, e:
 		print "Service call failed: %s" % e
 
+	# GTK threads enter and leave have to wrap all GUI-altering functions or it will crash.
 	gtk.gdk.threads_enter()
 	gtk.main()
 	gtk.gdk.threads_leave()
