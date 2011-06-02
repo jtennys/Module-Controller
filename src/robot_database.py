@@ -29,12 +29,27 @@ def serialCommExit():
 # This function takes a string and makes sure it is in decimal before
 # we convert it. Otherwise, we just send a string with a 0 in it.
 def response_check(response):
+	global commFails
+	global MAX_COMM_FAILS
+	global robotComm
+
 	formattedResponse = '0'
 
-	# If we have a valid response, we extract the numbers.
-	for i in range(0,len(response)):
-		if (response[i] >= '0') and (response[i] <= '9'):
-			formattedResponse += response[i]
+	if len(response):
+		# Clear the number of communication failures to 0.
+		commFails = 0
+
+		# If we have a valid response, we extract the numbers.
+		for i in range(0,len(response)):
+			if (response[i] >= '0') and (response[i] <= '9'):
+				formattedResponse += response[i]
+	else:
+		# Increment the number of communication failures.
+		commFails += 1
+
+		if commFails >= MAX_COMM_FAILS:
+			robotComm.flushInput()
+			robotComm.flushOutput()
 
 	return formattedResponse
 
@@ -301,6 +316,7 @@ def start_robot_database():
 	global servoPower
 	global servoAngles
 	global robotComm
+	global commFails
 
 	# Pad the front of the these arrays.
 	moduleType.append(0)
@@ -322,14 +338,19 @@ def start_robot_database():
 
 	# Find out how many modules the robot has found.
 	while not numModules:
-		# Write the command to the robot.
+		# Flush the output buffer and write the command to the robot.
+		robotComm.flushOutput()
 		robotComm.write(command)
 
-		# Read the command from the robot.
+		# Read the command from the robot and flush the input buffer.
 		response = robotComm.readline()
+		robotComm.flushInput()
 
 		# Check the response string for validity and return the result.
 		response = response_check(response)
+
+		# Clear comm fails because we don't want to fail out waiting for the robot to turn on.
+		commFails = 0
 
 		if int(response):
 			numModules = int(response)
@@ -344,11 +365,13 @@ def start_robot_database():
 		# Find the module types for the range of numModules.
 		command = "r," + str(i) + ",t;"
 		while not moduleType[i]:
-			# Write the command to the robot.
+			# Flush the output buffer and write the command to the robot.
+			robotComm.flushOutput()
 			robotComm.write(command)
 
-			# Read the response from the robot.
+			# Read the command from the robot and flush the input buffer.
 			response = robotComm.readline()
+			robotComm.flushInput()
 
 			# Check the response string for validity and return the result.
 			response = response_check(response)
@@ -363,11 +386,13 @@ def start_robot_database():
 		command = "r," + str(i) + ",c;"
 
 		while not childPort[i]:
-			# Write the command to the robot.
+			# Flush the output buffer and write the command to the robot.
+			robotComm.flushOutput()
 			robotComm.write(command)
 
-			# Read the response from the robot.
+			# Read the command from the robot and flush the input buffer.
 			response = robotComm.readline()
+			robotComm.flushInput()
 
 			# Check the response string for validity and return the result.
 			response = response_check(response)
@@ -399,6 +424,7 @@ def start_robot_database():
 
 	for i in range(1,numModules+1):
 		print "Module %d to %d is a twist of %f degrees." % (i,i+1,moduleTwist[i])
+                print "Module %d is of type %d." % (i,moduleType[i])
 
 
 	# Start the services.
@@ -433,6 +459,10 @@ moduleTwist = []
 moduleType = []
 # The number of modules this system has.
 numModules = 0
+# The number of continuous communication failures we have had.
+commFails = 0
+# The number of allowable communication failures before taking action.
+MAX_COMM_FAILS = 50
 
 # Use this variable to avoid serial comm errors from multiple threads.
 serialInUse = 0
