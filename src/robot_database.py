@@ -279,24 +279,21 @@ def handle_get_arm_tip(req):
 	result_transform = [[0,0,-1,0],[0,1,0,0],[1,0,0,0],[0,0,0,1]]
 
 	# Calculate the transform matrix.
-	for i in range(0,numModules):
+	for i in range(1,numModules+1):
 		# Create the information for the next transform in the chain.
 		M = [[math.cos(degToRad(servoAngles[i])),
                       -1*math.sin(degToRad(servoAngles[i])),
                       0,
-                      upstreamLength[i+1]+downstreamLength[i]],
-		     [math.sin(degToRad(servoAngles[i]))*math.cos(degToRad(moduleTwist[i])),
-                      math.cos(degToRad(servoAngles[i]))*math.cos(degToRad(moduleTwist[i])),
-                      -1*math.sin(degToRad(moduleTwist[i])),
+                      upstreamLength[i]+downstreamLength[i-1]],
+		     [math.sin(degToRad(servoAngles[i]))*math.cos(degToRad(moduleTwist[i-1])),
+                      math.cos(degToRad(servoAngles[i]))*math.cos(degToRad(moduleTwist[i-1])),
+                      -1*math.sin(degToRad(moduleTwist[i-1])),
                       0],
-		     [math.sin(degToRad(servoAngles[i]))*math.sin(degToRad(moduleTwist[i])),
-                      math.cos(degToRad(servoAngles[i]))*math.sin(degToRad(moduleTwist[i])),
-                      math.cos(degToRad(moduleTwist[i])),
+		     [math.sin(degToRad(servoAngles[i]))*math.sin(degToRad(moduleTwist[i-1])),
+                      math.cos(degToRad(servoAngles[i]))*math.sin(degToRad(moduleTwist[i-1])),
+                      math.cos(degToRad(moduleTwist[i-1])),
                       0],
 		     [0,0,0,1]]
-
-		print "Transform from %d to %d:" % (i,i+1)
-		print M
 
 		# Temporary matrix for storing matrix multiply results.
 		temp_transform = []
@@ -313,25 +310,16 @@ def handle_get_arm_tip(req):
 					tempValue += result_transform[j][l]*M[l][k]
 				temp_transform[j].append(tempValue)
 
-		print "Temporary result:"
-		print temp_transform
-
 		# Copy the temporary matrix result into the final result matrix.
 		for j in range(0,len(result_transform[0])):
 			for k in range(0,len(result_transform[0])):
 				result_transform[j][k] = temp_transform[j][k]
-
-	print "Resulting matrix:"
-	print result_transform
 
 	# Get the transformed values.
 	x = result_transform[0][0]*downstreamLength[numModules] + result_transform[0][3]
 	y = result_transform[1][0]*downstreamLength[numModules] + result_transform[1][3]
 	z = result_transform[2][0]*downstreamLength[numModules] + result_transform[2][3]
 	
-	print "Calculated x as %f mm" % x
-	print "Calculated y as %f mm" % y
-	print "Calculated z as %f mm" % z
 	return GetArmTipResponse(x,y,z)
 
 # This function returns the module total to whoever wants to know.
@@ -423,6 +411,9 @@ def start_robot_database():
 
 		if int(response):
 			numModules = int(response)
+
+	# Have to flush the input here for no apparent reason or it only reads numModules from the buffer.
+	robotComm.flushInput()
 
 	# Find the module type and child port values.
 	for i in range(1,numModules+1):
@@ -526,7 +517,7 @@ parentHeight = 67.0
 # The length of the downstream portion of a child module type 1 (mm).
 child1Downstream = 56.0
 # The length of the upstream portion of a child module type 1 (mm).
-child1Upstream = 51.0
+child1Upstream = 51
 # The angle of rotation between ports for child module type 1 (degrees).
 child1PortAngle = 90.0
 # The angle offset for the servo inside of child module type 1 (10-bit value).

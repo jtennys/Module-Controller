@@ -8,6 +8,7 @@ FILE(REMOVE_RECURSE
   "../src/module_controller/srv/_SetServoAngle.py"
   "../src/module_controller/srv/_GetModuleTotal.py"
   "../src/module_controller/srv/_GetModuleOffset.py"
+  "../src/module_controller/srv/_GetArmTip.py"
   "../src/module_controller/srv/_GetModuleTwist.py"
   "../src/module_controller/srv/_GetServoPower.py"
   "../src/module_controller/srv/_GetServoAngle.py"

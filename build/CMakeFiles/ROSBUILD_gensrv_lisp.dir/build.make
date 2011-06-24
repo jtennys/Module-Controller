@@ -51,6 +51,9 @@ CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_GetModuleTotal.lisp
 CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/GetModuleOffset.lisp
 CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package.lisp
 CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_GetModuleOffset.lisp
+CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/GetArmTip.lisp
+CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package.lisp
+CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_GetArmTip.lisp
 CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/GetModuleTwist.lisp
 CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package.lisp
 CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_GetModuleTwist.lisp
@@ -148,6 +151,27 @@ CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_GetModuleLengths.lisp
 
 ../srv_gen/lisp/_package_GetModuleOffset.lisp: ../srv_gen/lisp/GetModuleOffset.lisp
 
+../srv_gen/lisp/GetArmTip.lisp: ../srv/GetArmTip.srv
+../srv_gen/lisp/GetArmTip.lisp: /opt/ros/unstable/stacks/ros_comm/clients/roslisp/scripts/genmsg_lisp.py
+../srv_gen/lisp/GetArmTip.lisp: /opt/ros/unstable/ros/core/roslib/scripts/gendeps
+../srv_gen/lisp/GetArmTip.lisp: ../manifest.xml
+../srv_gen/lisp/GetArmTip.lisp: /opt/ros/unstable/ros/tools/rospack/manifest.xml
+../srv_gen/lisp/GetArmTip.lisp: /opt/ros/unstable/ros/core/roslib/manifest.xml
+../srv_gen/lisp/GetArmTip.lisp: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/manifest.xml
+../srv_gen/lisp/GetArmTip.lisp: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/manifest.xml
+../srv_gen/lisp/GetArmTip.lisp: /opt/ros/unstable/ros/core/rosbuild/manifest.xml
+../srv_gen/lisp/GetArmTip.lisp: /opt/ros/unstable/ros/core/roslang/manifest.xml
+../srv_gen/lisp/GetArmTip.lisp: /opt/ros/unstable/stacks/ros_comm/clients/rospy/manifest.xml
+../srv_gen/lisp/GetArmTip.lisp: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/msg_gen/generated
+../srv_gen/lisp/GetArmTip.lisp: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/msg_gen/generated
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_5)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv_gen/lisp/GetArmTip.lisp, ../srv_gen/lisp/_package.lisp, ../srv_gen/lisp/_package_GetArmTip.lisp"
+	/opt/ros/unstable/stacks/ros_comm/clients/roslisp/scripts/genmsg_lisp.py /home/jason/ros_packages/module_controller/srv/GetArmTip.srv
+
+../srv_gen/lisp/_package.lisp: ../srv_gen/lisp/GetArmTip.lisp
+
+../srv_gen/lisp/_package_GetArmTip.lisp: ../srv_gen/lisp/GetArmTip.lisp
+
 ../srv_gen/lisp/GetModuleTwist.lisp: ../srv/GetModuleTwist.srv
 ../srv_gen/lisp/GetModuleTwist.lisp: /opt/ros/unstable/stacks/ros_comm/clients/roslisp/scripts/genmsg_lisp.py
 ../srv_gen/lisp/GetModuleTwist.lisp: /opt/ros/unstable/ros/core/roslib/scripts/gendeps
@@ -161,7 +185,7 @@ CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_GetModuleLengths.lisp
 ../srv_gen/lisp/GetModuleTwist.lisp: /opt/ros/unstable/stacks/ros_comm/clients/rospy/manifest.xml
 ../srv_gen/lisp/GetModuleTwist.lisp: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/msg_gen/generated
 ../srv_gen/lisp/GetModuleTwist.lisp: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/msg_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_5)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_6)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv_gen/lisp/GetModuleTwist.lisp, ../srv_gen/lisp/_package.lisp, ../srv_gen/lisp/_package_GetModuleTwist.lisp"
 	/opt/ros/unstable/stacks/ros_comm/clients/roslisp/scripts/genmsg_lisp.py /home/jason/ros_packages/module_controller/srv/GetModuleTwist.srv
 
@@ -182,7 +206,7 @@ CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_GetModuleLengths.lisp
 ../srv_gen/lisp/GetServoPower.lisp: /opt/ros/unstable/stacks/ros_comm/clients/rospy/manifest.xml
 ../srv_gen/lisp/GetServoPower.lisp: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/msg_gen/generated
 ../srv_gen/lisp/GetServoPower.lisp: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/msg_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_6)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_7)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv_gen/lisp/GetServoPower.lisp, ../srv_gen/lisp/_package.lisp, ../srv_gen/lisp/_package_GetServoPower.lisp"
 	/opt/ros/unstable/stacks/ros_comm/clients/roslisp/scripts/genmsg_lisp.py /home/jason/ros_packages/module_controller/srv/GetServoPower.srv
 
@@ -203,7 +227,7 @@ CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_GetModuleLengths.lisp
 ../srv_gen/lisp/GetServoAngle.lisp: /opt/ros/unstable/stacks/ros_comm/clients/rospy/manifest.xml
 ../srv_gen/lisp/GetServoAngle.lisp: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/msg_gen/generated
 ../srv_gen/lisp/GetServoAngle.lisp: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/msg_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_7)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_8)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv_gen/lisp/GetServoAngle.lisp, ../srv_gen/lisp/_package.lisp, ../srv_gen/lisp/_package_GetServoAngle.lisp"
 	/opt/ros/unstable/stacks/ros_comm/clients/roslisp/scripts/genmsg_lisp.py /home/jason/ros_packages/module_controller/srv/GetServoAngle.srv
 
@@ -224,7 +248,7 @@ CMakeFiles/ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_GetModuleLengths.lisp
 ../srv_gen/lisp/GetModuleLengths.lisp: /opt/ros/unstable/stacks/ros_comm/clients/rospy/manifest.xml
 ../srv_gen/lisp/GetModuleLengths.lisp: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/msg_gen/generated
 ../srv_gen/lisp/GetModuleLengths.lisp: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/msg_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_8)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_9)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv_gen/lisp/GetModuleLengths.lisp, ../srv_gen/lisp/_package.lisp, ../srv_gen/lisp/_package_GetModuleLengths.lisp"
 	/opt/ros/unstable/stacks/ros_comm/clients/roslisp/scripts/genmsg_lisp.py /home/jason/ros_packages/module_controller/srv/GetModuleLengths.srv
 
@@ -245,6 +269,9 @@ ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_GetModuleTotal.lisp
 ROSBUILD_gensrv_lisp: ../srv_gen/lisp/GetModuleOffset.lisp
 ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package.lisp
 ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_GetModuleOffset.lisp
+ROSBUILD_gensrv_lisp: ../srv_gen/lisp/GetArmTip.lisp
+ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package.lisp
+ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_GetArmTip.lisp
 ROSBUILD_gensrv_lisp: ../srv_gen/lisp/GetModuleTwist.lisp
 ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package.lisp
 ROSBUILD_gensrv_lisp: ../srv_gen/lisp/_package_GetModuleTwist.lisp

@@ -45,13 +45,14 @@ CMakeFiles/ROSBUILD_gensrv_py: ../src/module_controller/srv/__init__.py
 ../src/module_controller/srv/__init__.py: ../src/module_controller/srv/_SetServoAngle.py
 ../src/module_controller/srv/__init__.py: ../src/module_controller/srv/_GetModuleTotal.py
 ../src/module_controller/srv/__init__.py: ../src/module_controller/srv/_GetModuleOffset.py
+../src/module_controller/srv/__init__.py: ../src/module_controller/srv/_GetArmTip.py
 ../src/module_controller/srv/__init__.py: ../src/module_controller/srv/_GetModuleTwist.py
 ../src/module_controller/srv/__init__.py: ../src/module_controller/srv/_GetServoPower.py
 ../src/module_controller/srv/__init__.py: ../src/module_controller/srv/_GetServoAngle.py
 ../src/module_controller/srv/__init__.py: ../src/module_controller/srv/_GetModuleLengths.py
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../src/module_controller/srv/__init__.py"
-	/opt/ros/unstable/stacks/ros_comm/clients/rospy/scripts/gensrv_py.py --initpy /home/jason/ros_packages/module_controller/srv/SetServoPower.srv /home/jason/ros_packages/module_controller/srv/SetServoAngle.srv /home/jason/ros_packages/module_controller/srv/GetModuleTotal.srv /home/jason/ros_packages/module_controller/srv/GetModuleOffset.srv /home/jason/ros_packages/module_controller/srv/GetModuleTwist.srv /home/jason/ros_packages/module_controller/srv/GetServoPower.srv /home/jason/ros_packages/module_controller/srv/GetServoAngle.srv /home/jason/ros_packages/module_controller/srv/GetModuleLengths.srv
+	/opt/ros/unstable/stacks/ros_comm/clients/rospy/scripts/gensrv_py.py --initpy /home/jason/ros_packages/module_controller/srv/SetServoPower.srv /home/jason/ros_packages/module_controller/srv/SetServoAngle.srv /home/jason/ros_packages/module_controller/srv/GetModuleTotal.srv /home/jason/ros_packages/module_controller/srv/GetModuleOffset.srv /home/jason/ros_packages/module_controller/srv/GetArmTip.srv /home/jason/ros_packages/module_controller/srv/GetModuleTwist.srv /home/jason/ros_packages/module_controller/srv/GetServoPower.srv /home/jason/ros_packages/module_controller/srv/GetServoAngle.srv /home/jason/ros_packages/module_controller/srv/GetModuleLengths.srv
 
 ../src/module_controller/srv/_SetServoPower.py: ../srv/SetServoPower.srv
 ../src/module_controller/srv/_SetServoPower.py: /opt/ros/unstable/stacks/ros_comm/clients/rospy/scripts/gensrv_py.py
@@ -121,6 +122,23 @@ CMakeFiles/ROSBUILD_gensrv_py: ../src/module_controller/srv/__init__.py
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../src/module_controller/srv/_GetModuleOffset.py"
 	/opt/ros/unstable/stacks/ros_comm/clients/rospy/scripts/gensrv_py.py --noinitpy /home/jason/ros_packages/module_controller/srv/GetModuleOffset.srv
 
+../src/module_controller/srv/_GetArmTip.py: ../srv/GetArmTip.srv
+../src/module_controller/srv/_GetArmTip.py: /opt/ros/unstable/stacks/ros_comm/clients/rospy/scripts/gensrv_py.py
+../src/module_controller/srv/_GetArmTip.py: /opt/ros/unstable/ros/core/roslib/scripts/gendeps
+../src/module_controller/srv/_GetArmTip.py: ../manifest.xml
+../src/module_controller/srv/_GetArmTip.py: /opt/ros/unstable/ros/tools/rospack/manifest.xml
+../src/module_controller/srv/_GetArmTip.py: /opt/ros/unstable/ros/core/roslib/manifest.xml
+../src/module_controller/srv/_GetArmTip.py: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/manifest.xml
+../src/module_controller/srv/_GetArmTip.py: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/manifest.xml
+../src/module_controller/srv/_GetArmTip.py: /opt/ros/unstable/ros/core/rosbuild/manifest.xml
+../src/module_controller/srv/_GetArmTip.py: /opt/ros/unstable/ros/core/roslang/manifest.xml
+../src/module_controller/srv/_GetArmTip.py: /opt/ros/unstable/stacks/ros_comm/clients/rospy/manifest.xml
+../src/module_controller/srv/_GetArmTip.py: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/msg_gen/generated
+../src/module_controller/srv/_GetArmTip.py: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/msg_gen/generated
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_6)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../src/module_controller/srv/_GetArmTip.py"
+	/opt/ros/unstable/stacks/ros_comm/clients/rospy/scripts/gensrv_py.py --noinitpy /home/jason/ros_packages/module_controller/srv/GetArmTip.srv
+
 ../src/module_controller/srv/_GetModuleTwist.py: ../srv/GetModuleTwist.srv
 ../src/module_controller/srv/_GetModuleTwist.py: /opt/ros/unstable/stacks/ros_comm/clients/rospy/scripts/gensrv_py.py
 ../src/module_controller/srv/_GetModuleTwist.py: /opt/ros/unstable/ros/core/roslib/scripts/gendeps
@@ -134,7 +152,7 @@ CMakeFiles/ROSBUILD_gensrv_py: ../src/module_controller/srv/__init__.py
 ../src/module_controller/srv/_GetModuleTwist.py: /opt/ros/unstable/stacks/ros_comm/clients/rospy/manifest.xml
 ../src/module_controller/srv/_GetModuleTwist.py: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/msg_gen/generated
 ../src/module_controller/srv/_GetModuleTwist.py: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/msg_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_6)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_7)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../src/module_controller/srv/_GetModuleTwist.py"
 	/opt/ros/unstable/stacks/ros_comm/clients/rospy/scripts/gensrv_py.py --noinitpy /home/jason/ros_packages/module_controller/srv/GetModuleTwist.srv
 
@@ -151,7 +169,7 @@ CMakeFiles/ROSBUILD_gensrv_py: ../src/module_controller/srv/__init__.py
 ../src/module_controller/srv/_GetServoPower.py: /opt/ros/unstable/stacks/ros_comm/clients/rospy/manifest.xml
 ../src/module_controller/srv/_GetServoPower.py: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/msg_gen/generated
 ../src/module_controller/srv/_GetServoPower.py: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/msg_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_7)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_8)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../src/module_controller/srv/_GetServoPower.py"
 	/opt/ros/unstable/stacks/ros_comm/clients/rospy/scripts/gensrv_py.py --noinitpy /home/jason/ros_packages/module_controller/srv/GetServoPower.srv
 
@@ -168,7 +186,7 @@ CMakeFiles/ROSBUILD_gensrv_py: ../src/module_controller/srv/__init__.py
 ../src/module_controller/srv/_GetServoAngle.py: /opt/ros/unstable/stacks/ros_comm/clients/rospy/manifest.xml
 ../src/module_controller/srv/_GetServoAngle.py: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/msg_gen/generated
 ../src/module_controller/srv/_GetServoAngle.py: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/msg_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_8)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_9)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../src/module_controller/srv/_GetServoAngle.py"
 	/opt/ros/unstable/stacks/ros_comm/clients/rospy/scripts/gensrv_py.py --noinitpy /home/jason/ros_packages/module_controller/srv/GetServoAngle.srv
 
@@ -185,7 +203,7 @@ CMakeFiles/ROSBUILD_gensrv_py: ../src/module_controller/srv/__init__.py
 ../src/module_controller/srv/_GetModuleLengths.py: /opt/ros/unstable/stacks/ros_comm/clients/rospy/manifest.xml
 ../src/module_controller/srv/_GetModuleLengths.py: /opt/ros/unstable/stacks/ros_comm/messages/rosgraph_msgs/msg_gen/generated
 ../src/module_controller/srv/_GetModuleLengths.py: /opt/ros/unstable/stacks/ros_comm/messages/std_msgs/msg_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_9)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/jason/ros_packages/module_controller/build/CMakeFiles $(CMAKE_PROGRESS_10)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../src/module_controller/srv/_GetModuleLengths.py"
 	/opt/ros/unstable/stacks/ros_comm/clients/rospy/scripts/gensrv_py.py --noinitpy /home/jason/ros_packages/module_controller/srv/GetModuleLengths.srv
 
@@ -195,6 +213,7 @@ ROSBUILD_gensrv_py: ../src/module_controller/srv/_SetServoPower.py
 ROSBUILD_gensrv_py: ../src/module_controller/srv/_SetServoAngle.py
 ROSBUILD_gensrv_py: ../src/module_controller/srv/_GetModuleTotal.py
 ROSBUILD_gensrv_py: ../src/module_controller/srv/_GetModuleOffset.py
+ROSBUILD_gensrv_py: ../src/module_controller/srv/_GetArmTip.py
 ROSBUILD_gensrv_py: ../src/module_controller/srv/_GetModuleTwist.py
 ROSBUILD_gensrv_py: ../src/module_controller/srv/_GetServoPower.py
 ROSBUILD_gensrv_py: ../src/module_controller/srv/_GetServoAngle.py

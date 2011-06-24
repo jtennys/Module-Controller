@@ -87,11 +87,33 @@ class ModuleControllerGUI(threading.Thread):
 				try:
 					get_arm_tip = rospy.ServiceProxy('get_arm_tip', GetArmTip)
 					response = get_arm_tip(1)
+					x = response.x
+					y = response.y
+					z = response.z
 
+					# All distances come from the database in mm and must be converted.
+					if cmp(distanceUnit,"feet") == 0:
+						x = x*0.0032808399
+						y = y*0.0032808399
+						z = z*0.0032808399
+					elif cmp(distanceUnit,"inches") == 0:
+						x = x*0.0393700787
+						y = y*0.0393700787
+						z = z*0.0393700787
+					elif cmp(distanceUnit,"meters") == 0:
+						x = x*0.001
+						y = y*0.001
+						z = z*0.001
+					elif cmp(distanceUnit,"centimeters") == 0:
+						x = x*0.1
+						y = y*0.1
+						z = z*0.1
+
+					# Obtain access to the distance text boxes and print the values.
 					gtk.gdk.threads_enter()
-					textBoxList[numModules+1].set_text(str(response.x))
-					textBoxList[numModules+2].set_text(str(response.y))
-					textBoxList[numModules+3].set_text(str(response.z))
+					textBoxList[numModules+1].set_text(str(x))
+					textBoxList[numModules+2].set_text(str(y))
+					textBoxList[numModules+3].set_text(str(z))
 					gtk.gdk.threads_leave()
 				except rospy.ServiceException, e:
 					print "Service call failed: %s" % e
@@ -409,7 +431,7 @@ class ModuleControllerGUI(threading.Thread):
 		unitBox.append_text("meters")
 		unitBox.append_text("centimeters")
 		unitBox.append_text("millimeters")
-		unitBox.set_active(1)
+		unitBox.set_active(4)
 		frame.add(unitBox)
 		vbox.pack_start(frame, True, True, 0)
 		
@@ -443,8 +465,8 @@ notAll = True
 # Store the angle unit (starts as degrees).
 angleUnit = "degrees"
 	
-# Store the distance unit (starts as inches).
-distanceUnit = "inches"
+# Store the distance unit (starts as millimeters).
+distanceUnit = "millimeters"
 
 # Our GUI window object.
 window = gtk.Window(gtk.WINDOW_TOPLEVEL)

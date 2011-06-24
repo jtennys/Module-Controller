@@ -7,6 +7,7 @@ FILE(REMOVE_RECURSE
   "../srv_gen/cpp/include/module_controller/SetServoAngle.h"
   "../srv_gen/cpp/include/module_controller/GetModuleTotal.h"
   "../srv_gen/cpp/include/module_controller/GetModuleOffset.h"
+  "../srv_gen/cpp/include/module_controller/GetArmTip.h"
   "../srv_gen/cpp/include/module_controller/GetModuleTwist.h"
   "../srv_gen/cpp/include/module_controller/GetServoPower.h"
   "../srv_gen/cpp/include/module_controller/GetServoAngle.h"
