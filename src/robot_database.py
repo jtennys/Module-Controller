@@ -5,6 +5,15 @@ import rospy
 import serial
 import threading
 import time
+import math
+
+# A simple definition that converts degree values to radians.
+def degToRad(degrees):
+	return degrees*(math.pi/180)
+
+# A simple definition that converts radian values to degrees.
+def radToDeg(radians):
+	return radians*(180/math.pi)
 
 # The following pair of functions provide thread safety for our node, since
 # it has a possibility for multiple threads to be using the serial port.
@@ -29,27 +38,12 @@ def serialCommExit():
 # This function takes a string and makes sure it is in decimal before
 # we convert it. Otherwise, we just send a string with a 0 in it.
 def response_check(response):
-	global commFails
-	global MAX_COMM_FAILS
-	global robotComm
-
 	formattedResponse = '0'
 
-	if len(response):
-		# Clear the number of communication failures to 0.
-		commFails = 0
-
-		# If we have a valid response, we extract the numbers.
-		for i in range(0,len(response)):
-			if (response[i] >= '0') and (response[i] <= '9'):
-				formattedResponse += response[i]
-	else:
-		# Increment the number of communication failures.
-		commFails += 1
-
-		if commFails >= MAX_COMM_FAILS:
-			robotComm.flushInput()
-			robotComm.flushOutput()
+	# If we have a valid response, we extract the numbers.
+	for i in range(0,len(response)):
+		if (response[i] >= '0') and (response[i] <= '9'):
+			formattedResponse += response[i]
 
 	return formattedResponse
 
@@ -227,42 +221,118 @@ def handle_set_servo_power(req):
 		# Return a failure.
 		return SetServoPowerResponse(0)
 
-# This function handles a request by a computation node to get a module's length.
-def handle_get_module_lengths(req):
-	# Pull in the length arrays and module number.
-	global upstreamLength
-	global downstreamLength
-	global numModules
+# Function to get the x,y,z position of the arm tip.
+def handle_get_arm_tip(req):
+	# Pull our serial port object in from the global scope.
+	global robotComm
 
-	if (req.ID <= numModules) and (req.ID > 0):
-		# Return the values.
-		return GetModuleLengthsResponse(upstreamLength[req.ID],downstreamLength[req.ID])
-	else:
-		return GetModuleLengthsResponse(0,0)
+	# Pull in our angles array so we can store the angle for error checking.
+	global servoAngles
 
-# This function handles a request by a computation node to get a module's zero angle offset.
-def handle_get_module_offset(req):
-	# Pull in the length arrays and module number.
+	# Pull in our angle offsets so we can correctly alter the angles.
 	global angleOffset
-	global numModules
 
-	if (req.ID <= numModules) and (req.ID > 0):
-		# Return the values.
-		return GetModuleOffsetResponse(angleOffset[req.ID])
-	else:
-		return GetModuleOffsetResponse(0)
+	# Pull in the upstream lengths of all modules.
+	global upstreamLength
 
-# This function handles a request by a computation node to get a module's link twist.
-def handle_get_module_twist(req):
-	# Pull in the length arrays and module number.
+	# Pull in the downstream lengths of all modules.
+	global downstreamLength
+
+	# Pull in the twist angles of all modules.
 	global moduleTwist
+
+	# Pull in our total number of modules so that we don't allow an invalid index.
 	global numModules
 
-	if (req.ID < numModules) and (req.ID > 0):
-		# Return the values.
-		return GetModuleTwistResponse(moduleTwist[req.ID])
-	else:
-		return GetModuleTwistResponse(0)
+	# These are the floating point result values.
+	x = 0.0
+	y = 0.0
+	z = 0.0
+
+	# Update all of the servo angles first.
+	for i in range(1,numModules+1):
+		# Create the command.
+		command = "r," + str(i) + ",a;"
+
+		# Grab the serial port.
+		serialCommEnter()
+
+		# Write the command to the robot.
+		robotComm.write(command)
+
+		# Read the command from the robot.
+		response = robotComm.readline()
+
+		# Release the serial port.
+		serialCommExit()
+
+		# Check the response string for validity and return the result.
+		response = response_check(response)
+
+		if int(response,10):
+			# Convert the result of the response format check to float.
+			tempAngle = convert_to_angle(int(response,10) - angleOffset[i],2)
+
+			servoAngles[i] = tempAngle
+
+	# The result starts as the transform from the desired board testing plane to the arm plane.
+	result_transform = [[0,0,-1,0],[0,1,0,0],[1,0,0,0],[0,0,0,1]]
+
+	# Calculate the transform matrix.
+	for i in range(0,numModules):
+		# Create the information for the next transform in the chain.
+		M = [[math.cos(degToRad(servoAngles[i])),
+                      -1*math.sin(degToRad(servoAngles[i])),
+                      0,
+                      upstreamLength[i+1]+downstreamLength[i]],
+		     [math.sin(degToRad(servoAngles[i]))*math.cos(degToRad(moduleTwist[i])),
+                      math.cos(degToRad(servoAngles[i]))*math.cos(degToRad(moduleTwist[i])),
+                      -1*math.sin(degToRad(moduleTwist[i])),
+                      0],
+		     [math.sin(degToRad(servoAngles[i]))*math.sin(degToRad(moduleTwist[i])),
+                      math.cos(degToRad(servoAngles[i]))*math.sin(degToRad(moduleTwist[i])),
+                      math.cos(degToRad(moduleTwist[i])),
+                      0],
+		     [0,0,0,1]]
+
+		print "Transform from %d to %d:" % (i,i+1)
+		print M
+
+		# Temporary matrix for storing matrix multiply results.
+		temp_transform = []
+
+		# Multiply two adjacent matrices together.
+		for j in range(0,len(result_transform[0])):
+			# Start a new row.
+			temp_transform.append([])
+
+			# Fill the row with values.
+			for k in range(0,len(result_transform[0])):
+				tempValue = 0.0
+				for l in range(0,len(result_transform[0])):
+					tempValue += result_transform[j][l]*M[l][k]
+				temp_transform[j].append(tempValue)
+
+		print "Temporary result:"
+		print temp_transform
+
+		# Copy the temporary matrix result into the final result matrix.
+		for j in range(0,len(result_transform[0])):
+			for k in range(0,len(result_transform[0])):
+				result_transform[j][k] = temp_transform[j][k]
+
+	print "Resulting matrix:"
+	print result_transform
+
+	# Get the transformed values.
+	x = result_transform[0][0]*downstreamLength[numModules] + result_transform[0][3]
+	y = result_transform[1][0]*downstreamLength[numModules] + result_transform[1][3]
+	z = result_transform[2][0]*downstreamLength[numModules] + result_transform[2][3]
+	
+	print "Calculated x as %f mm" % x
+	print "Calculated y as %f mm" % y
+	print "Calculated z as %f mm" % z
+	return GetArmTipResponse(x,y,z)
 
 # This function returns the module total to whoever wants to know.
 def handle_get_module_total(req):
@@ -303,7 +373,11 @@ def get_module_twist_server():
 def get_module_total_server():
 	# Start the poll angle service.
 	s = rospy.Service('get_module_total', GetModuleTotal, handle_get_module_total)
-	
+
+def get_arm_tip_server():
+	# Start the forward kinematic solver service.
+	s = rospy.Service('get_arm_tip', GetArmTip, handle_get_arm_tip)
+
 def start_robot_database():
 	# Pull in the serial object and module number so we can initialize that number.
 	global numModules
@@ -316,14 +390,14 @@ def start_robot_database():
 	global servoPower
 	global servoAngles
 	global robotComm
-	global commFails
+	global masterHeight
 
 	# Pad the front of the these arrays.
 	moduleType.append(0)
 	moduleTwist.append(0.0)
 	angleOffset.append(0)
 	upstreamLength.append(0.0)
-	downstreamLength.append(0.0)
+	downstreamLength.append(parentHeight)
 	servoPower.append(False)
 	servoAngles.append(0.0)
 
@@ -338,19 +412,14 @@ def start_robot_database():
 
 	# Find out how many modules the robot has found.
 	while not numModules:
-		# Flush the output buffer and write the command to the robot.
-		robotComm.flushOutput()
+		# Write the command to the robot.
 		robotComm.write(command)
 
-		# Read the command from the robot and flush the input buffer.
+		# Read the command from the robot.
 		response = robotComm.readline()
-		robotComm.flushInput()
 
 		# Check the response string for validity and return the result.
 		response = response_check(response)
-
-		# Clear comm fails because we don't want to fail out waiting for the robot to turn on.
-		commFails = 0
 
 		if int(response):
 			numModules = int(response)
@@ -365,13 +434,11 @@ def start_robot_database():
 		# Find the module types for the range of numModules.
 		command = "r," + str(i) + ",t;"
 		while not moduleType[i]:
-			# Flush the output buffer and write the command to the robot.
-			robotComm.flushOutput()
+			# Write the command to the robot.
 			robotComm.write(command)
 
-			# Read the command from the robot and flush the input buffer.
+			# Read the response from the robot.
 			response = robotComm.readline()
-			robotComm.flushInput()
 
 			# Check the response string for validity and return the result.
 			response = response_check(response)
@@ -386,13 +453,11 @@ def start_robot_database():
 		command = "r," + str(i) + ",c;"
 
 		while not childPort[i]:
-			# Flush the output buffer and write the command to the robot.
-			robotComm.flushOutput()
+			# Write the command to the robot.
 			robotComm.write(command)
 
-			# Read the command from the robot and flush the input buffer.
+			# Read the response from the robot.
 			response = robotComm.readline()
-			robotComm.flushInput()
 
 			# Check the response string for validity and return the result.
 			response = response_check(response)
@@ -409,10 +474,10 @@ def start_robot_database():
 	# Fill in the rest of the values since we know module type.
 	for i in range(1,numModules+1):
 		if moduleType[i] == 1:
-			moduleTwist.append((childPort[i] - 1)*90.0)
-			angleOffset.append(511)
-			upstreamLength.append(50.0)
-			downstreamLength.append(50.0)
+			moduleTwist.append((childPort[i] - 1)*child1PortAngle)
+			angleOffset.append(child1ServoOffset)
+			upstreamLength.append(child1Upstream)
+			downstreamLength.append(child1Downstream)
 		else:
 			moduleTwist.append(0.0)
 			angleOffset.append(0)
@@ -424,7 +489,6 @@ def start_robot_database():
 
 	for i in range(1,numModules+1):
 		print "Module %d to %d is a twist of %f degrees." % (i,i+1,moduleTwist[i])
-                print "Module %d is of type %d." % (i,moduleType[i])
 
 
 	# Start the services.
@@ -432,10 +496,8 @@ def start_robot_database():
 	set_servo_angle_server()
 	get_servo_power_server()
 	set_servo_power_server()
-	get_module_lengths_server()
-	get_module_offset_server()
-	get_module_twist_server()
 	get_module_total_server()
+	get_arm_tip_server()
 
 # Here are our global data variables...
 # 
@@ -459,10 +521,16 @@ moduleTwist = []
 moduleType = []
 # The number of modules this system has.
 numModules = 0
-# The number of continuous communication failures we have had.
-commFails = 0
-# The number of allowable communication failures before taking action.
-MAX_COMM_FAILS = 50
+# The height of the parent module (mm).
+parentHeight = 67.0
+# The length of the downstream portion of a child module type 1 (mm).
+child1Downstream = 56.0
+# The length of the upstream portion of a child module type 1 (mm).
+child1Upstream = 51.0
+# The angle of rotation between ports for child module type 1 (degrees).
+child1PortAngle = 90.0
+# The angle offset for the servo inside of child module type 1 (10-bit value).
+child1ServoOffset = 511
 
 # Use this variable to avoid serial comm errors from multiple threads.
 serialInUse = 0

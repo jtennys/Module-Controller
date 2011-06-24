@@ -12,6 +12,8 @@
     (:file "_package_GetModuleTotal" :depends-on ("_package"))
     (:file "GetModuleOffset" :depends-on ("_package_GetModuleOffset"))
     (:file "_package_GetModuleOffset" :depends-on ("_package"))
+    (:file "GetArmTip" :depends-on ("_package_GetArmTip"))
+    (:file "_package_GetArmTip" :depends-on ("_package"))
     (:file "GetModuleTwist" :depends-on ("_package_GetModuleTwist"))
     (:file "_package_GetModuleTwist" :depends-on ("_package"))
     (:file "GetServoPower" :depends-on ("_package_GetServoPower"))

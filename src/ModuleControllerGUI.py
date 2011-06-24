@@ -80,11 +80,27 @@ class ModuleControllerGUI(threading.Thread):
 					except rospy.ServiceException, e:
 						print "Service call failed: %s" % e
 
+			# Don't print to distance boxes if they're editable. This is done
+			# to avoid overwriting user input.
+			if buttonList[0].get_active() == False:
+				rospy.wait_for_service('get_servo_angle', 1)
+				try:
+					get_arm_tip = rospy.ServiceProxy('get_arm_tip', GetArmTip)
+					response = get_arm_tip(1)
+
+					gtk.gdk.threads_enter()
+					textBoxList[numModules+1].set_text(str(response.x))
+					textBoxList[numModules+2].set_text(str(response.y))
+					textBoxList[numModules+3].set_text(str(response.z))
+					gtk.gdk.threads_leave()
+				except rospy.ServiceException, e:
+					print "Service call failed: %s" % e
+
 	# Set the killthread variable.
 	def stop(self):
 		self.killthread.set()
 		
-	# Function that is called when an click action happens.
+	# Function that is called when a click action happens.
 	def callback(self, widget, data=None):
 		global buttonList
 		global textBoxList
@@ -100,9 +116,13 @@ class ModuleControllerGUI(threading.Thread):
 					for i in range(1,numModules+1):
 						buttonList[i].set_active(True)
 
-						# Enable x y z entry since all modules are on.
-						for j in range(1,4):
-							textBoxList[numModules+j].set_editable(True)
+					# Enable x y z entry since all modules are on.
+					for j in range(1,4):
+						textBoxList[numModules+j].set_editable(True)
+
+					# Enable the "Send Coordinates" button.
+					buttonList[numModules+1].set_sensitive(True)
+					
 				elif widget.get_active() == False:
 					# If "All" has been clicked off, uncheck everything.
 					for i in range(1,numModules+1):
@@ -127,6 +147,8 @@ class ModuleControllerGUI(threading.Thread):
 				# Disable x y z entry since not all modules are on.
 				for i in range(1,4):
 					textBoxList[numModules+i].set_editable(False)
+				# Disable the "Send Coordinates" button.
+				buttonList[numModules+1].set_sensitive(False)
 			else:
 				# Create a variable to check if all modules are on.
 				# If they are, we will set the "All" box to true.
@@ -137,6 +159,9 @@ class ModuleControllerGUI(threading.Thread):
 				
 				if allOn:
 					buttonList[0].set_active(True)
+
+					# Enable the "Send Coordinates" button.
+					buttonList[numModules+1].set_sensitive(True)
 				
 			# Set the correct text box to active when it is powered on.
 			# Also, set the power to be on or off correctly.
@@ -392,6 +417,7 @@ class ModuleControllerGUI(threading.Thread):
 		ikEntry.connect("clicked", self.callback, "Send Coordinates")
 		vbox.pack_start(ikEntry, True, True, 2)
 		ikEntry.show()
+		buttonList.append(ikEntry)
 		
 		vbox.show()
 		window.show_all()
