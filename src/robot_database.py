@@ -35,6 +35,133 @@ def serialCommExit():
 	# All done.
 	serialInUse = 0
 
+def initializeRobot():
+	# Pull in the serial object and module number so we can initialize that number.
+	global numModules
+	global moduleType
+	global moduleTwist
+	global angleOffset
+	global upstreamLength
+	global downstreamLength
+	global childPort
+	global servoPower
+	global servoAngles
+	global servoSpeed
+	global robotComm
+	global parentHeight
+
+	# Empty the arrays and variables that we pulled in from the global scope.
+	numModules = 0
+	moduleType = []
+	moduleTwist = []
+	angleOffset = []
+	upstreamLength = []
+	downstreamLength = []
+	childPort = []
+	servoPower = []
+	servoAngles = []
+	servoSpeed = []
+	
+	# Pad the front of the these arrays.
+	moduleType.append(0)
+	moduleTwist.append(0.0)
+	angleOffset.append(0)
+	upstreamLength.append(0.0)
+	downstreamLength.append(parentHeight)
+	servoPower.append(False)
+	servoAngles.append(0.0)
+	servoSpeed.append(0)
+
+	# We currently only have one master port.
+	childPort.append(0)
+
+	# Create the command.
+	command = "n;"
+
+	# Grab the serial port.
+	serialCommEnter()
+
+	# Find out how many modules the robot has found.
+	while not numModules:
+		# Write the command to the robot.
+		robotComm.write(command)
+
+		# Read the command from the robot.
+		response = robotComm.readline()
+
+		# Check the response string for validity and return the result.
+		response = response_check(response)
+
+		if int(response):
+			numModules = int(response)
+
+	# Have to flush the input here for no apparent reason or it only reads numModules from the buffer.
+	robotComm.flushInput()
+
+	# Find the module type values.
+	for i in range(1,numModules+1):
+		# Initialize these values to zero.
+		moduleType.append(0)
+		servoPower.append(False)
+		servoAngles.append(0.0)
+
+		# Find the module types for the range of numModules.
+		command = "r," + str(i) + ",t;"
+		while not moduleType[i]:
+			# Write the command to the robot.
+			robotComm.write(command)
+
+			# Read the response from the robot.
+			response = robotComm.readline()
+
+			# Check the response string for validity and return the result.
+			response = response_check(response)
+
+			# Convert the results of the response format checks to int.
+			moduleType[i] = int(response,10)
+
+	# Find the module child port values.
+	for i in range(1,numModules):
+		childPort.append(0)
+
+		# Now find the child ports for the range of numModules.
+		command = "r," + str(i) + ",c;"
+
+		while not childPort[i]:
+			# Write the command to the robot.
+			robotComm.write(command)
+
+			# Read the response from the robot.
+			response = robotComm.readline()
+
+			# Check the response string for validity and return the result.
+			response = response_check(response)
+
+			# Convert the results of the response format checks to int.
+			childPort[i] = int(response,10)
+
+	# Add an extra child port to the end of the array to avoid misaligned calculations.
+	childPort.append(1)
+
+	# Release the serial port.
+	serialCommExit()
+
+	# Fill in the rest of the values since we know module type.
+	for i in range(1,numModules+1):
+		if moduleType[i] == 1:
+			moduleTwist.append((childPort[i] - 1)*child1PortAngle)
+			angleOffset.append(child1ServoOffset)
+			upstreamLength.append(child1Upstream)
+			downstreamLength.append(child1Downstream)
+		else:
+			moduleTwist.append(0.0)
+			angleOffset.append(0)
+			upstreamLength.append(0.0)
+			downstreamLength.append(0.0)
+
+	for i in range(1,numModules+1):
+		print "Module %d to %d is a twist of %f degrees." % (i,i+1,moduleTwist[i])
+
 # This function takes a string and makes sure it is in decimal before
 # we convert it. Otherwise, we just send a string with a 0 in it.
 def response_check(response):
@@ -221,6 +348,61 @@ def handle_set_servo_power(req):
 		# Return a failure.
 		return SetServoPowerResponse(0)
 
+# Function that handles a request to get the servo speed value.
+def handle_get_servo_speed(req):
+	# Pull our serial port object in from the global scope.
+	global robotComm
+
+	# Pull in our speed percentages.
+	global servoSpeed
+
+	# Pull in our total number of modules so that we don't allow an invalid index.
+	global numModules
+
+	if (req.ID <= numModules) and (req.ID > 0):
+		return GetServoSpeedResponse(servoSpeed[req.ID])
+	else:
+		return GetServoSpeedResponse(0)
+
+# Function that handles a request to set the servo speed value.
+def handle_set_servo_speed(req):
+	# Pull our serial port object in from the global scope.
+	global robotComm
+
+	# Pull in our servo speed array so we can read and write to it.
+	global servoSpeed
+
+	# Pull in our total number of modules so that we don't allow an invalid index.
+	global numModules
+
+	if (req.ID <= numModules) and (req.ID > 0):
+		# Grab the speed value.
+		speedPercent = req.Speed
+
+		# Convert that value to an integer between 1 and 1023 (10-bit minus the 0).
+		speedValue = int(1022*(speedPercent/100.0) + 1)
+
+		# Create the command.
+		command = "w," + str(req.ID) + ",s," + str(speedValue) + ";"
+
+		# Grab the serial port.
+		serialCommEnter()
+
+		# Write the torque command to the robot.
+		robotComm.write(command)
+
+		# Release the serial port.
+		serialCommExit()
+
+		# Set the power value for this servo.
+		servoPower[req.ID] = req.Speed
+
+		# Return a success.
+		return SetServoSpeedResponse(1)
+	else:
+		# Return a failure.
+		return SetServoSpeedResponse(0)
+
 # Function to get the x,y,z position of the arm tip.
 def handle_get_arm_tip(req):
 	# Pull our serial port object in from the global scope.
@@ -329,6 +511,30 @@ def handle_get_module_total(req):
 
 	return GetModuleTotalResponse(numModules)
 
+# This function resets the robot.
+def handle_reset_robot(req):
+	# Pull in the module number.
+	global numModules
+	# Pull in the serial object.
+	global robotComm
+
+	# Create the command.
+	command = "x;"
+
+	# Grab the serial port.
+	serialCommEnter()
+
+	# Write the command to the robot.
+	robotComm.write(command)
+
+	# Release the serial port.
+	serialCommExit()
+
+	# Initialize the robot again.
+	initializeRobot()
+
+	return ResetRobotResponse(1)
+
 # The following functions simply start their respective services.
 def get_servo_angle_server():
 	# Start the poll angle service.
@@ -338,6 +544,10 @@ def get_servo_power_server():
 	# Start the poll angle service.
 	s = rospy.Service('get_servo_power', GetServoPower, handle_get_servo_power)
 
+def get_servo_speed_server():
+	# Start the get speed service.
+	s = rospy.Service('get_servo_speed', GetServoSpeed, handle_get_servo_speed)
+
 def set_servo_angle_server():
 	# Start the set angle service.
 	s = rospy.Service('set_servo_angle', SetServoAngle, handle_set_servo_angle)
@@ -345,6 +555,10 @@ def set_servo_angle_server():
 def set_servo_power_server():
 	# Start the handle servo power service.
 	s = rospy.Service('set_servo_power', SetServoPower, handle_set_servo_power)
+
+def set_servo_speed_server():
+	# Start the set speed service.
+	s = rospy.Service('set_servo_speed', SetServoSpeed, handle_set_servo_speed)
 
 def get_module_lengths_server():
 	# Start the poll angle service.
@@ -366,129 +580,27 @@ def get_arm_tip_server():
 	# Start the forward kinematic solver service.
 	s = rospy.Service('get_arm_tip', GetArmTip, handle_get_arm_tip)
 
+def reset_robot_server():
+	# Start the software reset service.
+	s = rospy.Service('reset_robot', ResetRobot, handle_reset_robot)
+
 def start_robot_database():
-	# Pull in the serial object and module number so we can initialize that number.
-	global numModules
-	global moduleType
-	global moduleTwist
-	global angleOffset
-	global upstreamLength
-	global downstreamLength
-	global childPort
-	global servoPower
-	global servoAngles
-	global robotComm
-	global masterHeight
-
-	# Pad the front of the these arrays.
-	moduleType.append(0)
-	moduleTwist.append(0.0)
-	angleOffset.append(0)
-	upstreamLength.append(0.0)
-	downstreamLength.append(parentHeight)
-	servoPower.append(False)
-	servoAngles.append(0.0)
-
-	# We currently only have one master port.
-	childPort.append(0)
-
-	# Create the command.
-	command = "n;"
-
-	# Grab the serial port.
-	serialCommEnter()
-
-	# Find out how many modules the robot has found.
-	while not numModules:
-		# Write the command to the robot.
-		robotComm.write(command)
-
-		# Read the command from the robot.
-		response = robotComm.readline()
-
-		# Check the response string for validity and return the result.
-		response = response_check(response)
-
-		if int(response):
-			numModules = int(response)
-
-	# Have to flush the input here for no apparent reason or it only reads numModules from the buffer.
-	robotComm.flushInput()
-
-	# Find the module type and child port values.
-	for i in range(1,numModules+1):
-		# Initialize these values to zero.
-		moduleType.append(0)
-		servoPower.append(False)
-		servoAngles.append(0.0)
-
-		# Find the module types for the range of numModules.
-		command = "r," + str(i) + ",t;"
-		while not moduleType[i]:
-			# Write the command to the robot.
-			robotComm.write(command)
-
-			# Read the response from the robot.
-			response = robotComm.readline()
-
-			# Check the response string for validity and return the result.
-			response = response_check(response)
-
-			# Convert the results of the response format checks to int.
-			moduleType[i] = int(response,10)
-
-	for i in range(1,numModules):
-		childPort.append(0)
-
-		# Now find the child ports for the range of numModules.
-		command = "r," + str(i) + ",c;"
-
-		while not childPort[i]:
-			# Write the command to the robot.
-			robotComm.write(command)
-
-			# Read the response from the robot.
-			response = robotComm.readline()
-
-			# Check the response string for validity and return the result.
-			response = response_check(response)
-
-			# Convert the results of the response format checks to int.
-			childPort[i] = int(response,10)
-
-	# Add an extra child port to the end of the array to avoid misaligned calculations.
-	childPort.append(1)
-
-	# Release the serial port.
-	serialCommExit()
-
-	# Fill in the rest of the values since we know module type.
-	for i in range(1,numModules+1):
-		if moduleType[i] == 1:
-			moduleTwist.append((childPort[i] - 1)*child1PortAngle)
-			angleOffset.append(child1ServoOffset)
-			upstreamLength.append(child1Upstream)
-			downstreamLength.append(child1Downstream)
-		else:
-			moduleTwist.append(0.0)
-			angleOffset.append(0)
-			upstreamLength.append(0.0)
-			downstreamLength.append(0.0)
+	#Initialize the robot.
+	initializeRobot()
 
 	# Initialize the server.
 	rospy.init_node('robot_data_server')
-
-	for i in range(1,numModules+1):
-		print "Module %d to %d is a twist of %f degrees." % (i,i+1,moduleTwist[i])
-
 
 	# Start the services.
 	get_servo_angle_server()
 	set_servo_angle_server()
 	get_servo_power_server()
 	set_servo_power_server()
+	get_servo_speed_server()
+	set_servo_speed_server()
 	get_module_total_server()
 	get_arm_tip_server()
+	reset_robot_server()
 
 # Here are our global data variables...
 # 

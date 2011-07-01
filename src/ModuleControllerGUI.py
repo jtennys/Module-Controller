@@ -28,7 +28,7 @@ class ModuleControllerGUI(threading.Thread):
 		# Initialize the power toggle boxes.
 		for i in range(1,numModules+1):
 			# Get the current power status for all servos.
-			rospy.wait_for_service('get_servo_angle', 1)
+			rospy.wait_for_service('get_servo_power', 1)
 			try:
 				get_servo_power = rospy.ServiceProxy('get_servo_power', GetServoPower)
 				response = get_servo_power(i)
@@ -150,12 +150,43 @@ class ModuleControllerGUI(threading.Thread):
 					# If "All" has been clicked off, uncheck everything.
 					for i in range(1,numModules+1):
 						buttonList[i].set_active(False)
-
 		elif cmp(data, "Send Coordinates") == 0:
 			if buttonList[0].get_active():
 				print textBoxList[numModules+1].get_text()
 				print textBoxList[numModules+2].get_text()
 				print textBoxList[numModules+3].get_text()
+		elif cmp(data, "Reset Arm") == 0:
+			rospy.wait_for_service('reset_robot', 1)
+			try:
+				reset_robot = rospy.ServiceProxy('reset_robot', ResetRobot)
+				response = reset_robot(1)
+				if response.Success:
+					print "Robot Reset"
+			except rospy.ServiceException, e:
+				print "Service call failed: %s" % e
+		elif cmp(data[:5], "Speed") == 0:
+			if data[6] == 'A':
+				# Grab the input percentage value.
+				percentAll = widget.get_value()
+				for i in range(1, numModules+1):
+					rospy.wait_for_service('set_servo_speed', 1)
+					try:
+						set_servo_speed = rospy.ServiceProxy('set_servo_speed', SetServoSpeed)
+						response = set_servo_speed(i,percentAll)
+					except rospy.ServiceException, e:
+						print "Service call failed: %s" % e
+			else:
+				# Grab the index of the input slider.
+				index = int(data[6:len(data)])
+				# Grab the input percentage value.
+				percent = widget.get_value()
+				rospy.wait_for_service('set_servo_speed', 1)
+				try:
+					set_servo_speed = rospy.ServiceProxy('set_servo_speed', SetServoSpeed)
+					response = set_servo_speed(index,percent)
+				except rospy.ServiceException, e:
+					print "Service call failed: %s" % e
+				
 		elif cmp(data, "Save Pose") == 0:
 			tempStr = "/home/jason/ros_packages/module_controller/src/"+textBoxList[numModules+4].get_text()+".pos"
 			poseFile = open(tempStr, 'w')
@@ -420,6 +451,8 @@ class ModuleControllerGUI(threading.Thread):
 		speedhbox.pack_start(label, False, True, 0)
 		adjust1 = gtk.Adjustment(50.0,0.0,100.0,1.0,10.0,0.0)
 		speedScale = gtk.HScale(adjust1)
+		speedScale.set_digits(0)
+		speedScale.connect("value-changed", self.callback, "Speed All")
 		speedhbox.pack_start(speedScale, True, True, 0)
 		armvbox.pack_start(speedhbox, False, True, 0)
 
@@ -447,6 +480,11 @@ class ModuleControllerGUI(threading.Thread):
 		unitBox.set_active(4)
 		distancehbox.pack_start(unitBox, True, True, 0)
 		armvbox.pack_start(distancehbox, False, True, 0)
+
+		# Add a software reset button for the root arm.
+		armReset = gtk.Button("Reset Arm")
+		armReset.connect("clicked", self.callback, "Reset Arm")
+		armvbox.pack_start(armReset, False, True, 0)
 
 		frame.add(armvbox)
 		vbox.pack_start(frame, False, True, 0)
@@ -491,6 +529,8 @@ class ModuleControllerGUI(threading.Thread):
 			speedhbox.pack_start(label, False, True, 0)
 			adjust1 = gtk.Adjustment(50.0,0.0,100.0,1.0,10.0,0.0)
 			speedScale = gtk.HScale(adjust1)
+			speedScale.set_digits(0)
+			speedScale.connect("value-changed", self.callback, "Speed " + str(i))
 			speedhbox.pack_start(speedScale, True, True, 0)
 
 			# Pack it all together.
