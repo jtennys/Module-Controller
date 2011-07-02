@@ -70,7 +70,7 @@ def initializeRobot():
 	downstreamLength.append(parentHeight)
 	servoPower.append(False)
 	servoAngles.append(0.0)
-	servoSpeed.append(0)
+	servoSpeed.append(initialSpeedPercent)
 
 	# We currently only have one master port.
 	childPort.append(0)
@@ -153,6 +153,7 @@ def initializeRobot():
 			angleOffset.append(child1ServoOffset)
 			upstreamLength.append(child1Upstream)
 			downstreamLength.append(child1Downstream)
+			servoSpeed.append(initialSpeedPercent)
 		else:
 			moduleTwist.append(0.0)
 			angleOffset.append(0)
@@ -359,7 +360,7 @@ def handle_get_servo_speed(req):
 	# Pull in our total number of modules so that we don't allow an invalid index.
 	global numModules
 
-	if (req.ID <= numModules) and (req.ID > 0):
+	if (req.ID <= numModules) and (req.ID >= 0):
 		return GetServoSpeedResponse(servoSpeed[req.ID])
 	else:
 		return GetServoSpeedResponse(0)
@@ -624,6 +625,8 @@ moduleTwist = []
 moduleType = []
 # The number of modules this system has.
 numModules = 0
+# The initial speed percentage of all servos.
+initialSpeedPercent = 40
 # The height of the parent module (mm).
 parentHeight = 67.0
 # The length of the downstream portion of a child module type 1 (mm).

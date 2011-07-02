@@ -24,6 +24,7 @@ class ModuleControllerGUI(threading.Thread):
 		global textBoxList
 		global numModules
 		global angleUnit
+		global scaleList
 		
 		# Initialize the power toggle boxes.
 		for i in range(1,numModules+1):
@@ -35,6 +36,28 @@ class ModuleControllerGUI(threading.Thread):
 
 				gtk.gdk.threads_enter()
 				buttonList[i].set_active(response.Power)
+				gtk.gdk.threads_leave()
+			except rospy.ServiceException, e:
+				print "Service call failed: %s" % e
+
+		# Initialize speed sliders. We always start the GUI with one slider controlling all module speeds.
+		buttonList[len(buttonList)-1].set_active(1)
+		
+		# Disable all the other speed sliders but the total arm slider.
+		for i in range(1,numModules+1):
+			gtk.gdk.threads_enter()
+			scaleList[i].set_sensitive(False)
+			gtk.gdk.threads_leave()
+
+		for i in range(0,numModules+1):
+			# Get the current speed for all servos.
+			rospy.wait_for_service('get_servo_speed', 1)
+			try:
+				get_servo_speed = rospy.ServiceProxy('get_servo_speed', GetServoSpeed)
+				response = get_servo_speed(i)
+
+				gtk.gdk.threads_enter()
+				scaleList[i].set_value(response.Speed)
 				gtk.gdk.threads_leave()
 			except rospy.ServiceException, e:
 				print "Service call failed: %s" % e
@@ -129,6 +152,7 @@ class ModuleControllerGUI(threading.Thread):
 		global textBoxList
 		global numModules
 		global notAll
+		global scaleList
 
 		# If "All" has been checked, check all boxes.
 		if cmp(data,"Power All") == 0:
@@ -170,9 +194,12 @@ class ModuleControllerGUI(threading.Thread):
 				percentAll = widget.get_value()
 				for i in range(1, numModules+1):
 					rospy.wait_for_service('set_servo_speed', 1)
+					print "Wait over"
 					try:
 						set_servo_speed = rospy.ServiceProxy('set_servo_speed', SetServoSpeed)
 						response = set_servo_speed(i,percentAll)
+						buttonList[i].set_active(1)
+						scaleList[i].set_value(percentAll)
 					except rospy.ServiceException, e:
 						print "Service call failed: %s" % e
 			else:
@@ -184,9 +211,25 @@ class ModuleControllerGUI(threading.Thread):
 				try:
 					set_servo_speed = rospy.ServiceProxy('set_servo_speed', SetServoSpeed)
 					response = set_servo_speed(index,percent)
+					buttonList[index].set_active(1)
 				except rospy.ServiceException, e:
 					print "Service call failed: %s" % e
-				
+		elif cmp(data, "Control Speed All") == 0:
+			if widget.get_active() == 1:
+				# Enable the all slider.
+				scaleList[0].set_sensitive(True)
+
+				# Disable all the other speed sliders but the total arm slider.
+				for i in range(1,numModules+1):
+					scaleList[i].set_sensitive(False)
+			else:
+				# Disable the all slider.
+				scaleList[0].set_sensitive(False)
+
+				# Enable all the other speed sliders but the total arm slider.
+				for i in range(1,numModules+1):
+					scaleList[i].set_sensitive(True)
+
 		elif cmp(data, "Save Pose") == 0:
 			tempStr = "/home/jason/ros_packages/module_controller/src/"+textBoxList[numModules+4].get_text()+".pos"
 			poseFile = open(tempStr, 'w')
@@ -203,30 +246,33 @@ class ModuleControllerGUI(threading.Thread):
 			tempStr = "/home/jason/ros_packages/module_controller/src/"+textBoxList[numModules+4].get_text()+".mot"
 			motFile = open(tempStr, 'r')
 
-			# Open the individual position file.
-			tempStr = motFile.readline()
-			pose = string.split(tempStr,',')
-			tempStr = pose[0]
-			tempStr.replace('\n','')
-			print repr(tempStr)
-			tempStr = "/home/jason/ros_packages/module_controller/src/"+"pose1"+".pos"
-			posFile = open(tempStr, 'r')
-			# Go to the specifiec pose.
-			rospy.wait_for_service('set_servo_angle', 1)
-			try:
-				set_servo_angle = rospy.ServiceProxy('set_servo_angle', SetServoAngle)
-				for i in range(1,numModules+1):
-					angleStr = posFile.readline()
-					response = set_servo_angle(i, float(angleStr))
-					if response.Success:
-						print "Set Module %d to %f degrees!" % (i,float(angleStr))
-						textBoxList[i].set_text(angleStr)
-						buttonList[i].set_active(True)
-			except rospy.ServiceException, e:
-				print "Service call failed: %s" % e
-			posFile.close()
-			motFile.close()
+			# While we have at least a one letter file name and an extension read from the motion file.
+			while len(tempStr) > 4:
+				# Open the individual position file.
+				tempStr = motFile.readline()
+				pose = string.split(tempStr,',')
+			
+				if len(pose) == 2:
+					tempStr = "/home/jason/ros_packages/module_controller/src/"+pose[0]+".pos"
+					posFile = open(tempStr, 'r')
+					# Go to the specifiec pose.
+					rospy.wait_for_service('set_servo_angle', 1)
+					try:
+						set_servo_angle = rospy.ServiceProxy('set_servo_angle', SetServoAngle)
+						for i in range(1,numModules+1):
+							angleStr = posFile.readline()
+							response = set_servo_angle(i, float(angleStr))
+							if response.Success:
+								print "Set Module %d to %f degrees!" % (i,float(angleStr))
+								textBoxList[i].set_text(angleStr)
+								buttonList[i].set_active(True)
+					except rospy.ServiceException, e:
+						print "Service call failed: %s" % e
 
+					posFile.close()
+					time.sleep(float(pose[1]))
+
+			motFile.close()
 		else:
 			# If a module box has been checked off, we have to look at
 			# this condition to make sure that the "All" box also gets
@@ -413,6 +459,7 @@ class ModuleControllerGUI(threading.Thread):
 		global window
 		global buttonList
 		global textBoxList
+		global scaleList
 		
 		# Store the total number of modules we were passed.
 		numModules = args[0]
@@ -442,9 +489,8 @@ class ModuleControllerGUI(threading.Thread):
 
 		# Create the checkbox that lets a user specify how to change speed.
 		toggleSpeedAll = gtk.CheckButton("Speed All")
-		toggleSpeedAll.connect("toggled", self.callback, "Speed All")
+		toggleSpeedAll.connect("toggled", self.callback, "Control Speed All")
 		armvbox.pack_start(toggleSpeedAll, False, True, 0)
-		# can't be added b/c of module power checks buttonList.append(toggleSpeedAll)
 
 		# Create the speed slider.
 		label = gtk.Label("Speed (%):")
@@ -453,6 +499,8 @@ class ModuleControllerGUI(threading.Thread):
 		speedScale = gtk.HScale(adjust1)
 		speedScale.set_digits(0)
 		speedScale.connect("value-changed", self.callback, "Speed All")
+		speedScale.set_update_policy(gtk.UPDATE_DISCONTINUOUS)
+		scaleList.append(speedScale)
 		speedhbox.pack_start(speedScale, True, True, 0)
 		armvbox.pack_start(speedhbox, False, True, 0)
 
@@ -480,11 +528,6 @@ class ModuleControllerGUI(threading.Thread):
 		unitBox.set_active(4)
 		distancehbox.pack_start(unitBox, True, True, 0)
 		armvbox.pack_start(distancehbox, False, True, 0)
-
-		# Add a software reset button for the root arm.
-		armReset = gtk.Button("Reset Arm")
-		armReset.connect("clicked", self.callback, "Reset Arm")
-		armvbox.pack_start(armReset, False, True, 0)
 
 		frame.add(armvbox)
 		vbox.pack_start(frame, False, True, 0)
@@ -531,6 +574,8 @@ class ModuleControllerGUI(threading.Thread):
 			speedScale = gtk.HScale(adjust1)
 			speedScale.set_digits(0)
 			speedScale.connect("value-changed", self.callback, "Speed " + str(i))
+			speedScale.set_update_policy(gtk.UPDATE_DISCONTINUOUS)
+			scaleList.append(speedScale)
 			speedhbox.pack_start(speedScale, True, True, 0)
 
 			# Pack it all together.
@@ -614,8 +659,16 @@ class ModuleControllerGUI(threading.Thread):
 		mothbox.pack_start(motRun, True, True, 0)
 		buttonList.append(motRun)
 		posevbox.pack_start(mothbox, False, False, 0)
+
+		buttonList.append(toggleSpeedAll)
+
 		frame.add(posevbox)
 		vbox.pack_start(frame, True, True, 0)
+
+		# Add a software reset button for the root arm.
+		armReset = gtk.Button("Reset Arm")
+		armReset.connect("clicked", self.callback, "Reset Arm")
+		vbox.pack_start(armReset, False, True, 0)
 
 		vbox.show()
 		window.show_all()
@@ -627,6 +680,8 @@ numModules = 0
 buttonList = []
 # This array stores the text entry objects as they are created.
 textBoxList = []
+# This array stores the speed scales.
+scaleList = []
 # This sets float precision.
 precision = 2
 # This variable allows the "All" box to be manipulated without
