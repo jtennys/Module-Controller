@@ -163,6 +163,8 @@ def initializeRobot():
 	for i in range(1,numModules+1):
 		print "Module %d to %d is a twist of %f degrees." % (i,i+1,moduleTwist[i])
 
+	print " "
+
 # This function takes a string and makes sure it is in decimal before
 # we convert it. Otherwise, we just send a string with a 0 in it.
 def response_check(response):
@@ -560,18 +562,6 @@ def set_servo_power_server():
 def set_servo_speed_server():
 	# Start the set speed service.
 	s = rospy.Service('set_servo_speed', SetServoSpeed, handle_set_servo_speed)
-
-def get_module_lengths_server():
-	# Start the poll angle service.
-	s = rospy.Service('get_module_lengths', GetModuleLengths, handle_get_module_lengths)
-
-def get_module_offset_server():
-	# Start the poll angle service.
-	s = rospy.Service('get_module_offset', GetModuleOffset, handle_get_module_offset)
-
-def get_module_twist_server():
-	# Start the poll angle service.
-	s = rospy.Service('get_module_twist', GetModuleTwist, handle_get_module_twist)
 
 def get_module_total_server():
 	# Start the poll angle service.

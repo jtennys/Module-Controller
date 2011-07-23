@@ -81,7 +81,6 @@ class ModuleControllerGUI(threading.Thread):
 			except rospy.ServiceException, e:
 				print "Service call failed: %s" % e
 
-
 		# While the user hasn't closed the window or pressed ctrl+c.
 		while not (self.killthread.isSet() or rospy.is_shutdown()):
 			for i in range(1,numModules+1):
@@ -194,7 +193,6 @@ class ModuleControllerGUI(threading.Thread):
 				percentAll = widget.get_value()
 				for i in range(1, numModules+1):
 					rospy.wait_for_service('set_servo_speed', 1)
-					print "Wait over"
 					try:
 						set_servo_speed = rospy.ServiceProxy('set_servo_speed', SetServoSpeed)
 						response = set_servo_speed(i,percentAll)
