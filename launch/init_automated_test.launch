@@ -1,0 +1,6 @@
+<launch>
+   <arg name="M" default="1"/>
+   <arg name="N" default="10"/>
+   <node pkg="module_controller" name="robot1" type="robot_database.py" output="screen"/>
+   <node pkg="module_controller" name="init1" type="init_tester.py" args="$(arg M) $(arg N)" output="screen"/>
+</launch>

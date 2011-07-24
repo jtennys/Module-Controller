@@ -76,6 +76,18 @@ def initializeRobot():
 	childPort.append(0)
 
 	# Create the command.
+	command = "x;"
+
+	# Grab the serial port.
+	serialCommEnter()
+
+	# Write the command to the robot.
+	robotComm.write(command)
+
+	# Release the serial port.
+	serialCommExit()
+
+	# Create the command.
 	command = "n;"
 
 	# Grab the serial port.
@@ -160,7 +172,7 @@ def initializeRobot():
 			upstreamLength.append(0.0)
 			downstreamLength.append(0.0)
 
-	for i in range(1,numModules+1):
+	for i in range(0,numModules):
 		print "Module %d to %d is a twist of %f degrees." % (i,i+1,moduleTwist[i])
 
 	print " "
@@ -516,23 +528,6 @@ def handle_get_module_total(req):
 
 # This function resets the robot.
 def handle_reset_robot(req):
-	# Pull in the module number.
-	global numModules
-	# Pull in the serial object.
-	global robotComm
-
-	# Create the command.
-	command = "x;"
-
-	# Grab the serial port.
-	serialCommEnter()
-
-	# Write the command to the robot.
-	robotComm.write(command)
-
-	# Release the serial port.
-	serialCommExit()
-
 	# Initialize the robot again.
 	initializeRobot()
 
