@@ -1,4 +1,5 @@
 <launch>
-   <node pkg="module_controller" name="robot1" type="robot_database.py" output="screen"/>
+   <arg name="S" default="0"/>
+   <node pkg="module_controller" name="robot1" type="robot_database.py" args="$(arg S)" output="screen"/>
    <node pkg="module_controller" name="gui1" type="ModuleControllerGUI.py" output="screen"/>
 </launch>

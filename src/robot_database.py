@@ -6,6 +6,7 @@ import serial
 import threading
 import time
 import math
+import sys
 
 # A simple definition that converts degree values to radians.
 def degToRad(degrees):
@@ -49,6 +50,7 @@ def initializeRobot():
 	global servoSpeed
 	global robotComm
 	global parentHeight
+	global suggestedTotal
 
 	# Empty the arrays and variables that we pulled in from the global scope.
 	numModules = 0
@@ -76,7 +78,10 @@ def initializeRobot():
 	childPort.append(0)
 
 	# Create the command.
-	command = "x;"
+	if (((suggestedTotal[0] >= '1') and (suggestedTotal[0] <= '9')) or (suggestedTotal[0] == 'r')):
+		command = "x," + suggestedTotal + ";"
+	else:
+		command = "x;"
 
 	# Grab the serial port.
 	serialCommEnter()
@@ -626,6 +631,9 @@ child1ServoOffset = 511
 # Use this variable to avoid serial comm errors from multiple threads.
 serialInUse = 0
 
+# This variable holds the module total suggested from the command line.
+suggestedTotal = ""
+
 # This is our serial communication object.
 robotComm = serial.Serial(port = '/dev/ttyUSB0',\
                           baudrate = 115200,\
@@ -635,6 +643,9 @@ robotComm = serial.Serial(port = '/dev/ttyUSB0',\
                           timeout = 0.01)
 
 if __name__ == "__main__":
+	# Store the suggested total.
+	suggestedTotal = sys.argv[1]
+
 	# Start all of this database's services and functions.
 	start_robot_database()
 
