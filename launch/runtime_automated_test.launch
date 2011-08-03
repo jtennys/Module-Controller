@@ -1,7 +1,9 @@
 <launch>
    <arg name="M" default="1"/>
    <arg name="N" default="100"/>
-   <arg name="T" default="10"/>
-   <arg name="target" default="S"/>
-   <node pkg="module_controller" name="runtime1" type="runtime_speed_tester.py" args="$(arg M) $(arg N) $(arg T) $(arg target)" output="screen"/>
+   <arg name="start" default="0"/>
+   <arg name="end" default="10"/>
+   <arg name="step" default="0.05"/>
+   <arg name="regulate" default="1"/>
+   <node pkg="module_controller" name="runtime1" type="runtime_speed_tester.py" args="$(arg M) $(arg N) $(arg start) $(arg end) $(arg step) $(arg regulate)" output="screen"/>
 </launch>

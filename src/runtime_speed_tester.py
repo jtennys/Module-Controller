@@ -2,6 +2,7 @@
 import serial
 import time
 import sys
+import csv
 
 # This function takes a string and makes sure it is in decimal before
 # we convert it. Otherwise, we just send a string with a 0 in it.
@@ -23,70 +24,102 @@ robotComm = serial.Serial(port = '/dev/ttyUSB0',\
                           stopbits = 1)
 
 if __name__ == "__main__":
+	# Pull in the roslaunch command line parameters.
 	targetModule = int(sys.argv[1])
 	totalTrials = int(sys.argv[2])
-	timeoutVal = float(sys.argv[3])/1000.0
+	startVal = float(sys.argv[3])/1000.0
+	endVal = float(sys.argv[4])/1000.0
+	stepVal = float(sys.argv[5])/1000.0
+	regulated = int(sys.argv[6])
+
 	servoFails = []
 	controllerFails = []
+	data = []
+	dataTitles = []
 	
-	for i in range(0,targetModule+1):
+	# Populate the data lists.
+	servoFails.append(0)
+	controllerFails.append(0)		
+	data.append(0.0)
+	dataTitles.append("Timeout")
+
+	for i in range(1,targetModule+1):
 		servoFails.append(0)
-		controllerFails.append(0)
-
-	robotComm.timeout = timeoutVal
-	
-	for i in range(1,targetModule+1):
-		command = "r," + str(i) + ",a;"
-
-		# Test the target in a sweep for totalTrials.
-		for j in range(0,totalTrials):
-			# Write the command to the robot.
-			robotComm.write(command)
-
-			# Read the command from the robot.
-			response = robotComm.readline()
-
-			# Check the response string for validity and return the result.
-			response = response_check(response)
-
-			if not int(response,10):
-				servoFails[i] += 1
-
-
-			time.sleep(0.01)
-			robotComm.flushInput()
-
-		# time.sleep(0.1)
+		controllerFails.append(0)		
+		data.append(0.0)
+		dataTitles.append("Servo " + str(i))
 
 	for i in range(1,targetModule+1):
-		command = "r," + str(i) + ",t;"
+		data.append(0.0)
+		dataTitles.append("Cont " + str(i))
 
-		# Test the target in a sweep for totalTrials.
-		for j in range(0,totalTrials):
-			# Write the command to the robot.
-			robotComm.write(command)
+	# Create a csv spreadsheet writer object and initialize it.
+	resultWriter = csv.writer(open('/home/jason/ros_packages/module_controller/test.csv', 'wb'), delimiter=' ')
+	resultWriter.writerow(dataTitles)
 
-			# Read the command from the robot.
-			response = robotComm.readline()
+	# If the start value is 0, fill in all zero values and increment.
+	if startVal == 0.0:
+		resultWriter.writerow(data)
+		startVal += stepVal
 
-			# Check the response string for validity and return the result.
-			response = response_check(response)
+	while startVal <= endVal:
+		robotComm.timeout = startVal
+		data[0] = startVal*1000
 
-			if not int(response,10):
-				controllerFails[i] += 1
+		for i in range(0,targetModule+1):
+			servoFails[i] = 0
+			controllerFails[i] = 0
 
-			time.sleep(0.01)
-			robotComm.flushInput()
+		for i in range(1,targetModule+1):
+			command = "r," + str(i) + ",a;"
 
-		# time.sleep(0.1)
+			# Test the target in a sweep for totalTrials.
+			for j in range(0,totalTrials):
+				# Write the command to the robot.
+				robotComm.write(command)
 
-	print "\n"
-	for i in range(1,targetModule+1):
-		print "Servo %d: %.1f%%" % (i,100.0*(float(totalTrials-servoFails[i])/float(totalTrials)))
+				# Read the command from the robot.
+				response = robotComm.readline()
 
-	for i in range(1,targetModule+1):
-		print "Controller %d: %.1f%%" % (i,100.0*(float(totalTrials-controllerFails[i])/float(totalTrials)))
-	print "\n"
+				# Check the response string for validity and return the result.
+				response = response_check(response)
+
+				if not int(response,10):
+					servoFails[i] += 1
+
+				if regulated:
+					time.sleep(0.01)
+					robotComm.flushInput()
+
+			data[i] = 100.0*(float(totalTrials-servoFails[i])/float(totalTrials))
+
+		for i in range(1,targetModule+1):
+			command = "r," + str(i) + ",t;"
+
+			# Test the target in a sweep for totalTrials.
+			for j in range(0,totalTrials):
+				# Write the command to the robot.
+				robotComm.write(command)
+
+				# Read the command from the robot.
+				response = robotComm.readline()
+
+				# Check the response string for validity and return the result.
+				response = response_check(response)
+
+				if not int(response,10):
+					controllerFails[i] += 1
+
+				if regulated:
+					time.sleep(0.01)
+					robotComm.flushInput()
+
+			data[i+targetModule] = 100.0*(float(totalTrials-controllerFails[i])/float(totalTrials))
+
+		startVal += stepVal
+
+		print "Timeout %.2f done!" % data[0]
+		resultWriter.writerow(data)
 
 
 
