@@ -120,6 +120,3 @@ if __name__ == "__main__":
 
 		print "Timeout %.2f done!" % data[0]
 		resultWriter.writerow(data)
-
-
-
