@@ -51,6 +51,11 @@ def initializeRobot():
 	global robotComm
 	global parentHeight
 	global suggestedTotal
+	global initialSpeedPercent
+	global child1ServoOffsets
+	global child1PortAngle
+	global child1Upstream
+	global child1Downstream
 
 	# Empty the arrays and variables that we pulled in from the global scope.
 	numModules = 0
@@ -73,6 +78,15 @@ def initializeRobot():
 	servoPower.append(False)
 	servoAngles.append(0.0)
 	servoSpeed.append(initialSpeedPercent)
+
+	# Populate the array used to calibrate the board.
+	child1ServoOffsets.append(0)
+	child1ServoOffsets.append(511) # 514)
+	child1ServoOffsets.append(511) # 519)
+	child1ServoOffsets.append(511) # 510)
+	child1ServoOffsets.append(511) # 501)
+	child1ServoOffsets.append(511) # 513)
+	child1ServoOffsets.append(511) # 513)
 
 	# We currently only have one master port.
 	childPort.append(0)
@@ -167,7 +181,7 @@ def initializeRobot():
 	for i in range(1,numModules+1):
 		if moduleType[i] == 1:
 			moduleTwist.append((childPort[i] - 1)*child1PortAngle)
-			angleOffset.append(child1ServoOffset)
+			angleOffset.append(child1ServoOffsets[i])
 			upstreamLength.append(child1Upstream)
 			downstreamLength.append(child1Downstream)
 			servoSpeed.append(initialSpeedPercent)
@@ -616,17 +630,17 @@ moduleType = []
 # The number of modules this system has.
 numModules = 0
 # The initial speed percentage of all servos.
-initialSpeedPercent = 40
+initialSpeedPercent = 25
 # The height of the parent module (mm).
-parentHeight = 67.0
+parentHeight = 66.0 # 69.176
 # The length of the downstream portion of a child module type 1 (mm).
 child1Downstream = 56.0
 # The length of the upstream portion of a child module type 1 (mm).
-child1Upstream = 51
+child1Upstream = 51.0
 # The angle of rotation between ports for child module type 1 (degrees).
 child1PortAngle = 90.0
 # The angle offset for the servo inside of child module type 1 (10-bit value).
-child1ServoOffset = 511
+child1ServoOffsets = []
 
 # Use this variable to avoid serial comm errors from multiple threads.
 serialInUse = 0

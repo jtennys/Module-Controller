@@ -53,6 +53,10 @@ if __name__ == "__main__":
 		data.append(0.0)
 		dataTitles.append("Cont " + str(i))
 
+	data.append(0.0)
+	controllerFails.append(0)
+	dataTitles.append("Parent")
+
 	# Create a csv spreadsheet writer object and initialize it.
 	resultWriter = csv.writer(open('/home/jason/ros_packages/module_controller/test.csv', 'wb'), delimiter=' ')
 	resultWriter.writerow(dataTitles)
@@ -69,6 +73,8 @@ if __name__ == "__main__":
 		for i in range(0,targetModule+1):
 			servoFails[i] = 0
 			controllerFails[i] = 0
+
+		controllerFails[targetModule+1] = 0
 
 		for i in range(1,targetModule+1):
 			command = "r," + str(i) + ",a;"
@@ -92,7 +98,7 @@ if __name__ == "__main__":
 					robotComm.flushInput()
 
 			data[i] = 100.0*(float(totalTrials-servoFails[i])/float(totalTrials))
-
+		
 		for i in range(1,targetModule+1):
 			command = "r," + str(i) + ",t;"
 
@@ -115,7 +121,29 @@ if __name__ == "__main__":
 					robotComm.flushInput()
 
 			data[i+targetModule] = 100.0*(float(totalTrials-controllerFails[i])/float(totalTrials))
+#			data[i] = 100.0*(float(totalTrials-controllerFails[i])/float(totalTrials))
 
+		command = "n;"
+
+		for i in range(0,totalTrials):
+			# Write the command to the robot.
+			robotComm.write(command)
+
+			# Read the command from the robot.
+			response = robotComm.readline()
+
+			# Check the response string for validity and return the result.
+			response = response_check(response)
+
+			if not int(response,10):
+				controllerFails[targetModule+1] += 1
+
+			if regulated:
+				time.sleep(0.01)
+				robotComm.flushInput()
+
+		data[(targetModule*2)+1] = 100.0*(float(totalTrials-controllerFails[targetModule+1])/float(totalTrials))
+			
 		startVal += stepVal
 
 		print "Timeout %.2f done!" % data[0]
